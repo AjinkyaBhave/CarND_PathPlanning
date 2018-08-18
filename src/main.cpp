@@ -252,7 +252,7 @@ int main() {
 				{
 					next_s = car_s + (i+1)*dist_inc;
 					next_d = 0.0;
-					vector<double> next_xy = getXY(next_s, next_d, map_waypoints__s, map_waypoints_x, map_waypoints_y);
+					vector<double> next_xy = getXY(next_s, next_d, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 					next_x_vals.push_back(next_xy[0]);
 					next_y_vals.push_back(next_xy[1]);
 					
