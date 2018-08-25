@@ -241,7 +241,7 @@ int main() {
           	json msgJson;
 				
 				// Length of current path in number of points 
-				int path_size = 50
+				int path_size = 50;
           	// Length of previous path in number of points
 				int prev_path_size = previous_path_x.size();
 				// Lane closest to the centre line is 0. Middle lane is 1.
@@ -310,7 +310,7 @@ int main() {
 					double shift_x = control_points_x[i] - ref_x;
 					double shift_y = control_points_y[i] - ref_y;
 					control_points_x[i] = shift_x*cos(-ref_yaw) - shift_y*sin(-ref_yaw);
-					control_points_y[i] = shift_x*sin(-ref_yaw_ref) + shift_y*cos(-ref_yaw);					
+					control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);					
 				}
 				
 				// Create a spline from the control points defined
