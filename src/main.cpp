@@ -254,8 +254,8 @@ int main() {
 				
 				// List of control points that are spaced cp_inc apart. 
 				// These will be used as for spline fitting later
-				vector<double> controlpoints_x;
-				vector<double> controlpoints_y;
+				vector<double> control_points_x;
+				vector<double> control_points_y;
 				
 				// Distance between successive control points in Frenet coordinates in metres
 				int cp_inc = 30;
