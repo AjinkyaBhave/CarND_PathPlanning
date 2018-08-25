@@ -297,13 +297,13 @@ int main() {
 				vector<double> next_cp1 = getXY(car_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 				vector<double> next_cp2 = getXY(car_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 				
-				control_points_x.push_back(cp0[0]);
-				control_points_x.push_back(cp1[0]);
-				control_points_x.push_back(cp2[0]);
+				control_points_x.push_back(next_cp0[0]);
+				control_points_x.push_back(next_cp1[0]);
+				control_points_x.push_back(next_cp2[0]);
 				
-				control_points_y.push_back(cp0[1]);
-				control_points_y.push_back(cp1[1]);
-				control_points_y.push_back(cp2[1]);
+				control_points_y.push_back(next_cp0[1]);
+				control_points_y.push_back(next_cp1[1]);
+				control_points_y.push_back(next_cp2[1]);
 				
 				// Make vehicle frame as local reference frame for control points
 				for (int i = 0; i < control_points_x.size(); i++){
@@ -331,7 +331,7 @@ int main() {
 				
 				// 
 				double target_x = cp_inc;
-				double target_y = s(target_x);
+				double target_y = control_spline(target_x);
 				double target_dist = sqrt(target_x*target_x + target_y*target_y);
 				
 				double x_add_on = 0;
