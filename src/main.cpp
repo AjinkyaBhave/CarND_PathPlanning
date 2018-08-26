@@ -241,7 +241,7 @@ int main() {
           	json msgJson;
 				
 				// Sample time of simulator in seconds
-				Ts = 0.02;
+				double Ts = 0.02;
 				// Length of current path in number of points 
 				int path_size = 50;
           	// Length of previous path in number of points
@@ -251,7 +251,7 @@ int main() {
 				// Reference speed of ego vehicle [mph]
 				double ref_vel = 49;
 				// Conversion from mph to m/s
-				mph_to_mps = 0.447;
+				double mph_to_mps = 0.447;
 				// List of actual (x,y) waypoints used for trajectory generation
 				vector<double> next_x_vals;
           	vector<double> next_y_vals;
@@ -341,14 +341,14 @@ int main() {
 				for(int i=0; i < path_size - prev_path_size; i++ ){
 					
 					double x_spline = x_offset + x_inc;
-					double y_spline = control_spline(x_point);
+					double y_spline = control_spline(x_spline);
 					x_offset = x_spline;
 					
 					// Transform back to global frame from vehicle frame
 					double x_global = x_spline*cos(ref_yaw) - y_spline*sin(ref_yaw);
 					double y_global = x_spline*sin(ref_yaw) + y_spline*cos(ref_yaw);
 					x_global += ref_x;
-					y_global += ref_y
+					y_global += ref_y;
 					
 					// Add waypoint to path lists
 					next_x_vals.push_back(x_global);
