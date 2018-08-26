@@ -240,6 +240,8 @@ int main() {
 
           	json msgJson;
 				
+				// Sample time of simulator in seconds
+				Ts = 0.02;
 				// Length of current path in number of points 
 				int path_size = 50;
           	// Length of previous path in number of points
@@ -248,6 +250,8 @@ int main() {
 				int lane = 1;
 				// Reference speed of ego vehicle [mph]
 				double ref_vel = 49;
+				// Conversion from mph to m/s
+				mph_to_mps = 0.447;
 				// List of actual (x,y) waypoints used for trajectory generation
 				vector<double> next_x_vals;
           	vector<double> next_y_vals;
@@ -318,11 +322,7 @@ int main() {
 				control_spline.set_points(control_points_x, control_points_y);
 				
 				// Define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-				//double dist_inc = 0.5;
-				//double next_s = 0.0;
-				//double next_d = 0.0;
-				
-				// Add unprocessed previous path points from last time step
+				// First add unprocessed previous path points from last time step
 				for(int i = 0; i < prev_path_size; i++)
 				{
 					next_x_vals.push_back(previous_path_x[i]);
@@ -333,11 +333,26 @@ int main() {
 				double target_x = cp_inc;
 				double target_y = control_spline(target_x);
 				double target_dist = sqrt(target_x*target_x + target_y*target_y);
-				
-				double x_add_on = 0;
+				double N = target_dist/(Ts*ref_vel*mph_to_mps);
+				double x_inc = target_x/N;
+				double x_offset = 0;
 				
 				// Complete trajectory generation with spline points
-				for(int i=1; i <= path_size - prev_path_size; i++ ){
+				for(int i=0; i < path_size - prev_path_size; i++ ){
+					
+					double x_spline = x_offset + x_inc;
+					double y_spline = control_spline(x_point);
+					x_offset = x_spline;
+					
+					// Transform back to global frame from vehicle frame
+					double x_global = x_spline*cos(ref_yaw) - y_spline*sin(ref_yaw);
+					double y_global = x_spline*sin(ref_yaw) + y_spline*cos(ref_yaw);
+					x_global += ref_x;
+					y_global += ref_y
+					
+					// Add waypoint to path lists
+					next_x_vals.push_back(x_global);
+					next_y_vals.push_back(y_global);
 					
 				}
 				// Calculate
