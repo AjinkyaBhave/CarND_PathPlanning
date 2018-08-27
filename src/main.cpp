@@ -201,13 +201,12 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
   
-	// Starting lane of ego vehicle. Lane closest to the centre line is 0. Middle lane is 1.
+	// Starting lane of ego vehicle. Lane closest to the centre line is 0. Middle lane is 1. Right lane is 2.
 	int lane = 1;
 	// Reference speed of ego vehicle [mph]
 	double ref_vel = 0;
-	// Maximum reference speed of ego vehicle [mph]
-	
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+
+	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -224,181 +223,186 @@ int main() {
         string event = j[0].get<string>();
         
         if (event == "telemetry") {
-          // j[1] is the data JSON object
+         // j[1] is the data JSON object
           
-			 // Main car's localization Data
-          	double car_x = j[1]["x"];
-          	double car_y = j[1]["y"];
-          	double car_s = j[1]["s"];
-          	double car_d = j[1]["d"];
-          	double car_yaw = j[1]["yaw"];
-          	double car_speed = j[1]["speed"];
+			// Main car's localization Data
+			double car_x = j[1]["x"];
+			double car_y = j[1]["y"];
+			double car_s = j[1]["s"];
+			double car_d = j[1]["d"];
+			double car_yaw = j[1]["yaw"];
+			double car_speed = j[1]["speed"];
 
-          	// Previous path data given to the Planner
-          	auto previous_path_x = j[1]["previous_path_x"];
-          	auto previous_path_y = j[1]["previous_path_y"];
-          	// Previous path's end s and d values 
-          	double end_path_s = j[1]["end_path_s"];
-          	double end_path_d = j[1]["end_path_d"];
+			// Previous path data given to the Planner
+			auto previous_path_x = j[1]["previous_path_x"];
+			auto previous_path_y = j[1]["previous_path_y"];
+			// Previous path's end s and d values 
+			double end_path_s = j[1]["end_path_s"];
+			double end_path_d = j[1]["end_path_d"];
 
-          	// Sensor Fusion Data, a list of all other cars on the same side of the road.
-          	auto sensor_fusion = j[1]["sensor_fusion"];
+			// Sensor Fusion Data, a list of all other cars on the same side of the road.
+			auto sensor_fusion = j[1]["sensor_fusion"];
 
-          	json msgJson;
-				
-				// List of actual (x,y) waypoints used for trajectory generation
-				vector<double> next_x_vals;
-          	vector<double> next_y_vals;
-				
-				// List of control points that are spaced cp_inc apart. 
-				// These will be used as for spline fitting later
-				vector<double> control_points_x;
-				vector<double> control_points_y;
-				
-				// Sample time of simulator in seconds
-				double Ts = 0.02;
-				double max_ref_vel = 49.5;
-				// Change in ref_vel in mph to achieve 5 m/s^2 acceleration
-				double ref_vel_dec = 0.224;
-				// Conversion from mph to m/s
-				double mph_to_mps = 0.447;
-				// Length of current path in number of points 
-				int path_size = 50;
-				// Length of previous path in number of points
-				int prev_path_size = previous_path_x.size();
-				// Distance between successive control points in Frenet coordinates in metres
-				int cp_inc = 30;
-				
-				// Reference starting point for interpolation. 
-				// Could be either ego vehicle state or end point of previous path.
-          	double ref_x; 
-				double ref_y; 
-				double ref_yaw; 
-				double prev_ref_x;
-				double prev_ref_y;
-				
-				if(prev_path_size > 0){
-					car_s = end_path_s;
-					
-				}
-				bool warning_flag = false;
-				
-				// Find ref_v to use
-				for (int i = 0; i< sensor_fusion.size(); i++){
-					// Check if detected vehicle is in ego vehicle lane
-					float d = sensor_fusion[i][6];
-					if (d < 4+lane*4 && d > 4*lane){
-						double vx = sensor_fusion[i][3];
-						double vy = sensor_fusion[i][4];
-						double obstacle_speed = sqrt(vx*vx + vy*vy);
-						double obstacle_s = sensor_fusion[i][5];
-						// Project the obstacle s position prev_path_size steps into the future
-						obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
-						// Check gap between preceding vehicle and ego vehicle
-						if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
-							// Set flag to take safe actions
-							warning_flag = true;
+			json msgJson;
+			
+			// List of actual (x,y) waypoints used for trajectory generation
+			vector<double> next_x_vals;
+			vector<double> next_y_vals;
+			
+			// List of control points that are spaced cp_inc apart. 
+			// These will be used as for spline fitting later
+			vector<double> control_points_x;
+			vector<double> control_points_y;
+			
+			// Sample time of simulator in seconds
+			double Ts = 0.02;
+			// Maximum reference speed of ego vehicle [mph]
+			double max_ref_vel = 49.5;
+			// Change in ref_vel in mph to achieve 5 m/s^2 average acceleration
+			double ref_vel_dec = 0.224;
+			// Conversion from mph to m/s
+			double mph_to_mps = 0.447;
+			// Length of current path in number of points 
+			int path_size = 50;
+			// Length of previous path in number of points
+			int prev_path_size = previous_path_x.size();
+			// Distance between successive control points in Frenet coordinates in metres
+			int cp_inc = 30;
+			// Flag to initiate reducing current speed
+			bool obstacle_close = false;
+			
+			// Reference starting point for interpolation. 
+			// Could be either ego vehicle state or end point of previous path.
+			double ref_x; 
+			double ref_y; 
+			double ref_yaw; 
+			double prev_ref_x;
+			double prev_ref_y;
+			
+			if(prev_path_size > 0){
+				car_s = end_path_s;
+			}
+			
+			// Find ref_v to use
+			for (int i = 0; i< sensor_fusion.size(); i++){
+				// Check if detected vehicle is in ego vehicle lane
+				float d = sensor_fusion[i][6];
+				if (d < 4+lane*4 && d > 4*lane){
+					double vx = sensor_fusion[i][3];
+					double vy = sensor_fusion[i][4];
+					double obstacle_speed = sqrt(vx*vx + vy*vy);
+					double obstacle_s = sensor_fusion[i][5];
+					// Project the obstacle's Frenet position prev_path_size steps into the future
+					obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+					// Check future gap between preceding vehicle and ego vehicle
+					if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
+						// Set flag to take safe actions
+						obstacle_close = true;
+						// Change lanes
+						if(lane > 0){
+							lane = 0;
 						}
-					}					
-				}
+					}
+				}					
+			}
+			
+			if(obstacle_close){
+				ref_vel -= ref_vel_dec;
+			}
+			else if(ref_vel < max_ref_vel){
+				ref_vel += ref_vel_dec;
+			}
+			// If previous path is too small
+			if(prev_path_size < 2){
+				// Make path locally tangent to car heading
+				ref_x = car_x;
+				ref_y = car_y;
+				ref_yaw = deg2rad(car_yaw);
+				prev_ref_x = car_x - cos(car_yaw);
+				prev_ref_y = car_y - sin(car_yaw);
+			}
+			// Use previous path's endpoint as reference
+			else{
+				ref_x = previous_path_x[prev_path_size-1];
+				ref_y = previous_path_y[prev_path_size-1];
+				prev_ref_x = previous_path_x[prev_path_size-2];
+				prev_ref_y = previous_path_y[prev_path_size-2];
+				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
 				
-				if(warning_flag){
-					ref_vel -= ref_vel_dec;
-				}
-				else if(ref_vel < max_ref_vel){
-					ref_vel += ref_vel_dec;
-				}
-				// If previous path is too small
-				if(prev_path_size < 2){
-					// Make path locally tangent to car heading
-					ref_x = car_x;
-					ref_y = car_y;
-					ref_yaw = deg2rad(car_yaw);
-					prev_ref_x = car_x - cos(car_yaw);
-					prev_ref_y = car_y - sin(car_yaw);
-				}
-				// Use previous path's endpoint as reference
-				else{
-					ref_x = previous_path_x[prev_path_size-1];
-					ref_y = previous_path_y[prev_path_size-1];
-					prev_ref_x = previous_path_x[prev_path_size-2];
-					prev_ref_y = previous_path_y[prev_path_size-2];
-					ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
-					
-					
-				}
-				control_points_x.push_back(prev_ref_x);
-				control_points_x.push_back(ref_x);
-				control_points_y.push_back(prev_ref_y);
-				control_points_y.push_back(ref_y);
 				
-				// Add evenly spaced points cp_inc apart in Frenet coordinates ahead of starting reference 
-				vector<double> next_cp0 = getXY(car_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-				vector<double> next_cp1 = getXY(car_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-				vector<double> next_cp2 = getXY(car_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			}
+			control_points_x.push_back(prev_ref_x);
+			control_points_x.push_back(ref_x);
+			control_points_y.push_back(prev_ref_y);
+			control_points_y.push_back(ref_y);
+			
+			// Add evenly spaced points cp_inc apart in Frenet coordinates ahead of starting reference 
+			vector<double> next_cp0 = getXY(car_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp1 = getXY(car_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp2 = getXY(car_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			
+			control_points_x.push_back(next_cp0[0]);
+			control_points_x.push_back(next_cp1[0]);
+			control_points_x.push_back(next_cp2[0]);
+			
+			control_points_y.push_back(next_cp0[1]);
+			control_points_y.push_back(next_cp1[1]);
+			control_points_y.push_back(next_cp2[1]);
+			
+			// Make vehicle frame as local reference frame for control points
+			for (int i = 0; i < control_points_x.size(); i++){
+				double shift_x = control_points_x[i] - ref_x;
+				double shift_y = control_points_y[i] - ref_y;
+				control_points_x[i] = shift_x*cos(-ref_yaw) - shift_y*sin(-ref_yaw);
+				control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);					
+			}
+			
+			// Create a spline from the control points defined
+			tk::spline control_spline;
+			control_spline.set_points(control_points_x, control_points_y);
+			
+			// Define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
+			// First add unprocessed previous path points from last time step
+			for(int i = 0; i < prev_path_size; i++)
+			{
+				next_x_vals.push_back(previous_path_x[i]);
+				next_y_vals.push_back(previous_path_y[i]);					
+			}
+			
+			// 
+			double target_x = cp_inc;
+			double target_y = control_spline(target_x);
+			double target_dist = sqrt(target_x*target_x + target_y*target_y);
+			double N = target_dist/(Ts*ref_vel*mph_to_mps);
+			double x_inc = target_x/N;
+			double x_offset = 0;
+			
+			// Complete trajectory generation with spline points
+			for(int i=0; i < path_size - prev_path_size; i++ ){
 				
-				control_points_x.push_back(next_cp0[0]);
-				control_points_x.push_back(next_cp1[0]);
-				control_points_x.push_back(next_cp2[0]);
+				double x_spline = x_offset + x_inc;
+				double y_spline = control_spline(x_spline);
+				x_offset = x_spline;
 				
-				control_points_y.push_back(next_cp0[1]);
-				control_points_y.push_back(next_cp1[1]);
-				control_points_y.push_back(next_cp2[1]);
+				// Transform back to global frame from vehicle frame
+				double x_global = x_spline*cos(ref_yaw) - y_spline*sin(ref_yaw);
+				double y_global = x_spline*sin(ref_yaw) + y_spline*cos(ref_yaw);
+				x_global += ref_x;
+				y_global += ref_y;
 				
-				// Make vehicle frame as local reference frame for control points
-				for (int i = 0; i < control_points_x.size(); i++){
-					double shift_x = control_points_x[i] - ref_x;
-					double shift_y = control_points_y[i] - ref_y;
-					control_points_x[i] = shift_x*cos(-ref_yaw) - shift_y*sin(-ref_yaw);
-					control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);					
-				}
+				// Add waypoint to path lists
+				next_x_vals.push_back(x_global);
+				next_y_vals.push_back(y_global);
 				
-				// Create a spline from the control points defined
-				tk::spline control_spline;
-				control_spline.set_points(control_points_x, control_points_y);
-				
-				// Define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-				// First add unprocessed previous path points from last time step
-				for(int i = 0; i < prev_path_size; i++)
-				{
-					next_x_vals.push_back(previous_path_x[i]);
-					next_y_vals.push_back(previous_path_y[i]);					
-				}
-				
-				// 
-				double target_x = cp_inc;
-				double target_y = control_spline(target_x);
-				double target_dist = sqrt(target_x*target_x + target_y*target_y);
-				double N = target_dist/(Ts*ref_vel*mph_to_mps);
-				double x_inc = target_x/N;
-				double x_offset = 0;
-				
-				// Complete trajectory generation with spline points
-				for(int i=0; i < path_size - prev_path_size; i++ ){
-					
-					double x_spline = x_offset + x_inc;
-					double y_spline = control_spline(x_spline);
-					x_offset = x_spline;
-					
-					// Transform back to global frame from vehicle frame
-					double x_global = x_spline*cos(ref_yaw) - y_spline*sin(ref_yaw);
-					double y_global = x_spline*sin(ref_yaw) + y_spline*cos(ref_yaw);
-					x_global += ref_x;
-					y_global += ref_y;
-					
-					// Add waypoint to path lists
-					next_x_vals.push_back(x_global);
-					next_y_vals.push_back(y_global);
-					
-				}
-				// Calculate
-          	msgJson["next_x"] = next_x_vals;
-          	msgJson["next_y"] = next_y_vals;
+			}
+			// Calculate
+			msgJson["next_x"] = next_x_vals;
+			msgJson["next_y"] = next_y_vals;
 
-          	auto msg = "42[\"control\","+ msgJson.dump()+"]";
+			auto msg = "42[\"control\","+ msgJson.dump()+"]";
 
-          	//this_thread::sleep_for(chrono::milliseconds(1000));
-          	ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
+			//this_thread::sleep_for(chrono::milliseconds(1000));
+			ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
           
         }
       } else {
