@@ -249,7 +249,9 @@ int main() {
 				// Lane closest to the centre line is 0. Middle lane is 1.
 				int lane = 1;
 				// Reference speed of ego vehicle [mph]
-				double ref_vel = 49;
+				double ref_vel = 0;
+				// Change in ref_vel in mph to achieve 5 m/s^2 acceleration
+				double ref_vel_dec = 0.224;
 				// Conversion from mph to m/s
 				double mph_to_mps = 0.447;
 				// List of actual (x,y) waypoints used for trajectory generation
@@ -276,7 +278,7 @@ int main() {
 					car_s = end_path_s;
 					
 				}
-				bool collision_warn = false;
+				bool warning_flag = false;
 				
 				// Find ref_v to use
 				for (int i = 0; i< sensor_fusion.size(); i++){
@@ -291,11 +293,17 @@ int main() {
 						obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 						// Check gap between preceding vehicle and ego vehicle
 						if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
-							// Take safe actions
-							ref_vel = 30;
+							// Set flag to take safe actions
+							warning_flag = true;
 						}
-					}
-					
+					}					
+				}
+				
+				if(warning_flag){
+					ref_vel -= ref_vel_dec;
+				}
+				else if(ref_vel < max_ref_vel){
+					ref_vel += ref_vel_dec;
 				}
 				// If previous path is too small
 				if(prev_path_size < 2){
