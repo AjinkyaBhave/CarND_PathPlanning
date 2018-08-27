@@ -250,6 +250,8 @@ int main() {
 				int lane = 1;
 				// Reference speed of ego vehicle [mph]
 				double ref_vel = 0;
+				// Maximum reference speed of ego vehicle [mph]
+				doube max_ref_vel = 49.5;
 				// Change in ref_vel in mph to achieve 5 m/s^2 acceleration
 				double ref_vel_dec = 0.224;
 				// Conversion from mph to m/s
