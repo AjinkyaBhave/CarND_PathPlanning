@@ -283,8 +283,8 @@ int main() {
 					// Check if detected vehicle is in ego vehicle lane
 					float d = sensor_fusion[i][6];
 					if (d < 4+lane*4 && d > 4*lane){
-						double vx = sensor_fusion[i][3]*sensor_fusion[i][3];
-						double vy = sensor_fusion[i][4]*sensor_fusion[i][4];
+						double vx = sensor_fusion[i][3];
+						double vy = sensor_fusion[i][4];
 						double obstacle_speed = sqrt(vx*vx + vy*vy);
 						double obstacle_s = sensor_fusion[i][5];
 						// Project the obstacle s position prev_path_size steps into the future
