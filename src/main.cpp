@@ -200,7 +200,24 @@ int main() {
   	map_waypoints_dx.push_back(d_x);
   	map_waypoints_dy.push_back(d_y);
   }
-    
+  
+	// Sample time of simulator in seconds
+	double Ts = 0.02;
+	// Length of current path in number of points 
+	int path_size = 50;
+	// Length of previous path in number of points
+	int prev_path_size = previous_path_x.size();
+	// Lane closest to the centre line is 0. Middle lane is 1.
+	int lane = 1;
+	// Reference speed of ego vehicle [mph]
+	double ref_vel = 0;
+	// Maximum reference speed of ego vehicle [mph]
+	double max_ref_vel = 49.5;
+	// Change in ref_vel in mph to achieve 5 m/s^2 acceleration
+	double ref_vel_dec = 0.224;
+	// Conversion from mph to m/s
+	double mph_to_mps = 0.447;
+	
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -220,7 +237,7 @@ int main() {
         if (event == "telemetry") {
           // j[1] is the data JSON object
           
-        	// Main car's localization Data
+			 // Main car's localization Data
           	double car_x = j[1]["x"];
           	double car_y = j[1]["y"];
           	double car_s = j[1]["s"];
@@ -240,22 +257,6 @@ int main() {
 
           	json msgJson;
 				
-				// Sample time of simulator in seconds
-				double Ts = 0.02;
-				// Length of current path in number of points 
-				int path_size = 50;
-          	// Length of previous path in number of points
-				int prev_path_size = previous_path_x.size();
-				// Lane closest to the centre line is 0. Middle lane is 1.
-				int lane = 1;
-				// Reference speed of ego vehicle [mph]
-				double ref_vel = 0;
-				// Maximum reference speed of ego vehicle [mph]
-				double max_ref_vel = 49.5;
-				// Change in ref_vel in mph to achieve 5 m/s^2 acceleration
-				double ref_vel_dec = 0.224;
-				// Conversion from mph to m/s
-				double mph_to_mps = 0.447;
 				// List of actual (x,y) waypoints used for trajectory generation
 				vector<double> next_x_vals;
           	vector<double> next_y_vals;
