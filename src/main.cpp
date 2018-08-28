@@ -339,9 +339,9 @@ int main() {
 			control_points_y.push_back(ref_y);
 			
 			// Add evenly spaced points cp_inc apart in Frenet coordinates ahead of starting reference 
-			vector<double> next_cp0 = getXY(car_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp1 = getXY(car_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp2 = getXY(car_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp0 = getXY(end_path_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp1 = getXY(end_path_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp2 = getXY(end_path_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 			
 			control_points_x.push_back(next_cp0[0]);
 			control_points_x.push_back(next_cp1[0]);
