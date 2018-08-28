@@ -200,13 +200,15 @@ int main() {
   	map_waypoints_dx.push_back(d_x);
   	map_waypoints_dy.push_back(d_y);
   }
-  
+
+	// Start state of ego vehicle. KL=0, PLCR=1, PLCL=2, LCR=3, LCL=4
+	int state = 0;
 	// Starting lane of ego vehicle. Lane closest to the centre line is 0. Middle lane is 1. Right lane is 2.
 	int lane = 1;
 	// Reference speed of ego vehicle [mph]
 	double ref_vel = 0;
 
-	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &state, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -279,9 +281,9 @@ int main() {
 			double prev_ref_x;
 			double prev_ref_y;
 			
-			if(prev_path_size > 0){
+			/*if(prev_path_size > 0){
 				car_s = end_path_s;
-			}
+			}*/
 			
 			// Find ref_v to use
 			for (int i = 0; i< sensor_fusion.size(); i++){
@@ -293,17 +295,17 @@ int main() {
 					double obstacle_speed = sqrt(vx*vx + vy*vy);
 					double obstacle_s = sensor_fusion[i][5];
 					// Project the obstacle's Frenet position prev_path_size steps into the future
-					obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+					//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 					// Check future gap between preceding vehicle and ego vehicle
 					if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
 						// Set flag to take safe actions
 						obstacle_close = true;
-						// Change lanes
+						// FSM for changing lanes
 						if(lane > 0){
 							lane = 0;
 						}
 					}
-				}					
+				}
 			}
 			
 			if(obstacle_close){
