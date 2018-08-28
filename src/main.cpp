@@ -281,9 +281,9 @@ int main() {
 			double prev_ref_x;
 			double prev_ref_y;
 			
-			/*if(prev_path_size > 0){
+			if(prev_path_size > 0){
 				car_s = end_path_s;
-			}*/
+			}
 			
 			// Find ref_v to use
 			for (int i = 0; i< sensor_fusion.size(); i++){
@@ -295,7 +295,7 @@ int main() {
 					double obstacle_speed = sqrt(vx*vx + vy*vy);
 					double obstacle_s = sensor_fusion[i][5];
 					// Project the obstacle's Frenet position prev_path_size steps into the future
-					//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+					obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 					// Check future gap between preceding vehicle and ego vehicle
 					if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
 						// Set flag to take safe actions
@@ -339,9 +339,9 @@ int main() {
 			control_points_y.push_back(ref_y);
 			
 			// Add evenly spaced points cp_inc apart in Frenet coordinates ahead of starting reference 
-			vector<double> next_cp0 = getXY(end_path_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp1 = getXY(end_path_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp2 = getXY(end_path_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp0 = getXY(car_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp1 = getXY(car_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp2 = getXY(car_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 			
 			control_points_x.push_back(next_cp0[0]);
 			control_points_x.push_back(next_cp1[0]);
