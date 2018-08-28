@@ -324,7 +324,7 @@ int main() {
 				ref_yaw = deg2rad(car_yaw);
 				prev_ref_x = car_x - cos(car_yaw);
 				prev_ref_y = car_y - sin(car_yaw);
-				printf("\nusing car ref\n");
+				printf("\n using car ref\n");
 			}
 			// Use previous path's endpoint as reference
 			else{
@@ -334,7 +334,7 @@ int main() {
 				prev_ref_y = previous_path_y[prev_path_size-2];
 				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
 				car_s = end_path_s;
-				//printf("using prev_path\n");
+				printf("\n using prev_path\n");
 			}
 			control_points_x.push_back(prev_ref_x);
 			control_points_x.push_back(ref_x);
