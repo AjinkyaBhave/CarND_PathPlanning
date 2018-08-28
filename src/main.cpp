@@ -324,7 +324,7 @@ int main() {
 				ref_yaw = deg2rad(car_yaw);
 				prev_ref_x = car_x - cos(car_yaw);
 				prev_ref_y = car_y - sin(car_yaw);
-				printf("using car ref\n");
+				printf("\nusing car ref\n");
 			}
 			// Use previous path's endpoint as reference
 			else{
