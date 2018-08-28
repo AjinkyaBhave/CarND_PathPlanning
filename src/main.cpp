@@ -300,15 +300,12 @@ int main() {
 					if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
 						// Set flag to take safe actions
 						obstacle_close = true;
-						if(lane < 2){
-							lane += 1;
-						}
 						// FSM for changing lanes
-						/*if(lane > 0){
+						if(lane > 0){
 							lane -= 1;
 						}else if (lane < 2){
 							lane +=1;
-						}*/
+						}
 					}
 				}
 			}
