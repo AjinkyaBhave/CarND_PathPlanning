@@ -324,6 +324,7 @@ int main() {
 				ref_yaw = deg2rad(car_yaw);
 				prev_ref_x = car_x - cos(car_yaw);
 				prev_ref_y = car_y - sin(car_yaw);
+				printf("using car ref\n");
 			}
 			// Use previous path's endpoint as reference
 			else{
@@ -333,6 +334,7 @@ int main() {
 				prev_ref_y = previous_path_y[prev_path_size-2];
 				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
 				car_s = end_path_s;
+				printf("using prev_path\n");
 			}
 			control_points_x.push_back(prev_ref_x);
 			control_points_x.push_back(ref_x);
@@ -357,7 +359,8 @@ int main() {
 				double shift_x = control_points_x[i] - ref_x;
 				double shift_y = control_points_y[i] - ref_y;
 				control_points_x[i] = shift_x*cos(-ref_yaw) - shift_y*sin(-ref_yaw);
-				control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);					
+				control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);
+				printf("%f, ", control_points_x[i]);				
 			}
 			
 			// Create a spline from the control points defined
@@ -369,7 +372,7 @@ int main() {
 			for(int i = 0; i < prev_path_size; i++)
 			{
 				next_x_vals.push_back(previous_path_x[i]);
-				next_y_vals.push_back(previous_path_y[i]);					
+				next_y_vals.push_back(previous_path_y[i]);
 			}
 			
 			// 
