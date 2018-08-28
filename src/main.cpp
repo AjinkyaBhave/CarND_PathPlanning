@@ -281,11 +281,11 @@ int main() {
 			double prev_ref_x;
 			double prev_ref_y;
 			
-			if(prev_path_size > 0){
+			/*if(prev_path_size > 0){
 				car_s = end_path_s;
-			}
+			}*/
 			
-			// Find ref_v to use
+			// Check for front vehicle in same lane
 			for (int i = 0; i< sensor_fusion.size(); i++){
 				// Check if detected vehicle is in ego vehicle lane
 				float d = sensor_fusion[i][6];
@@ -295,7 +295,7 @@ int main() {
 					double obstacle_speed = sqrt(vx*vx + vy*vy);
 					double obstacle_s = sensor_fusion[i][5];
 					// Project the obstacle's Frenet position prev_path_size steps into the future
-					obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+					//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 					// Check future gap between preceding vehicle and ego vehicle
 					if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
 						// Set flag to take safe actions
@@ -330,8 +330,7 @@ int main() {
 				prev_ref_x = previous_path_x[prev_path_size-2];
 				prev_ref_y = previous_path_y[prev_path_size-2];
 				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
-				
-				
+				car_s = end_path_s;
 			}
 			control_points_x.push_back(prev_ref_x);
 			control_points_x.push_back(ref_x);
