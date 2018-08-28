@@ -334,7 +334,7 @@ int main() {
 				prev_ref_y = previous_path_y[prev_path_size-2];
 				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
 				car_s = end_path_s;
-				printf("using prev_path\n");
+				//printf("using prev_path\n");
 			}
 			control_points_x.push_back(prev_ref_x);
 			control_points_x.push_back(ref_x);
@@ -360,7 +360,7 @@ int main() {
 				double shift_y = control_points_y[i] - ref_y;
 				control_points_x[i] = shift_x*cos(-ref_yaw) - shift_y*sin(-ref_yaw);
 				control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);
-				printf("%f, ", control_points_x[i]);				
+				printf("%f, ", control_points_x[i]);
 			}
 			
 			// Create a spline from the control points defined
