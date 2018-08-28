@@ -302,7 +302,9 @@ int main() {
 						obstacle_close = true;
 						// FSM for changing lanes
 						if(lane > 0){
-							lane = 0;
+							lane -= 1;
+						}else if (lane < 2){
+							lane +=1;
 						}
 					}
 				}
