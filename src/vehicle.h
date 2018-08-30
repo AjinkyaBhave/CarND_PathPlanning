@@ -7,7 +7,7 @@ class Vehicle{
 	public:
 		// Members
 		
-		// Start state of ego vehicle. KL=0, PLCR=1, PLCL=2, LCR=3, LCL=4
+		// Start state of ego vehicle. KL=0, PLCL=1, PLCR=2, LCL=3, LCR=4
 		int state;
 		// Starting lane of ego vehicle. Lane closest to the centre line is 0. Middle lane is 1. Right lane is 2.
 		int lane;
@@ -26,22 +26,39 @@ class Vehicle{
 		double ref_vel;
 		// Maximum reference speed of ego vehicle [mph]
 		double max_ref_vel;
-		// Change in ref_vel in mph to achieve 5 m/s^2 average acceleration
-		double ref_vel_dec;
+		// Change in ref_vel in mph to achieve target average acceleration
+		double ref_vel_delta;
 		// Sample time of simulator in seconds
 		double Ts;
 		// Length of current path in number of points 
 		int path_size;
-		// Flag to initiate reducing current speed
-		bool obstacle_close; 
+		// Distance between successive control points in Frenet coordinates in metres
+		int cp_inc;
 		
+		// Indicates if surrounding car of this type is present
+		bool cur_front_car;
+		bool cur_rear_car;
+		bool left_front_car;
+		bool left_rear_car;
+		bool right_front_car;
+		bool right_rear_car;
+		
+		// Vehicle IDs of closest surround cars will be saved here
+		int cur_front_id;
+		int cur_rear_id;
+		int left_front_id;
+		int left_rear_id;
+		int right_front_id;
+		int right_rear_id;
+
 		// Methods
 		// Constructors
 		Vehicle();
 		Vehicle(int lane, double max_ref_vel);
 		//Destructor
 		virtual ~Vehicle();
-		bool get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion );
+		void get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion);
+		void choose_next_state(std::vector< std::vector<double> > sensor_fusion);
 	
 };
 #endif

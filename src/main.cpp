@@ -246,7 +246,7 @@ int main() {
 			vector<double> next_x_vals;
 			vector<double> next_y_vals;
 			
-			// List of control points that are spaced cp_inc apart. 
+			// List of control points that are spaced car.cp_inc apart. 
 			// These will be used as for spline fitting later
 			vector<double> control_points_x;
 			vector<double> control_points_y;
@@ -255,9 +255,6 @@ int main() {
 			double mph_to_mps = 0.447;
 			// Length of previous path in number of points
 			int prev_path_size = previous_path_x.size();
-			// Distance between successive control points in Frenet coordinates in metres
-			int cp_inc = 30;
-			
 			// Reference starting point for interpolation. 
 			// Could be either ego vehicle state or end point of previous path.
 			double ref_x; 
@@ -269,13 +266,6 @@ int main() {
 			//if(prev_path_size > 0){
 				//car.s = end_path_s;
 			//}
-			
-			if(car.obstacle_close){
-				car.ref_vel -= car.ref_vel_dec;
-			}
-			else if(car.ref_vel < car.max_ref_vel){
-				car.ref_vel += car.ref_vel_dec;
-			}
 			// If previous path is too small
 			if(prev_path_size < 2){
 				// Make path locally tangent to car heading
@@ -301,10 +291,10 @@ int main() {
 			control_points_y.push_back(prev_ref_y);
 			control_points_y.push_back(ref_y);
 			
-			// Add evenly spaced points cp_inc apart in Frenet coordinates ahead of starting reference 
-			vector<double> next_cp0 = getXY(car.s+cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp1 = getXY(car.s+2*cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp2 = getXY(car.s+3*cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			// Add evenly spaced points car.cp_inc apart in Frenet coordinates ahead of starting reference 
+			vector<double> next_cp0 = getXY(car.s+car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp1 = getXY(car.s+2*car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp2 = getXY(car.s+3*car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 			
 			control_points_x.push_back(next_cp0[0]);
 			control_points_x.push_back(next_cp1[0]);
@@ -336,7 +326,7 @@ int main() {
 			}
 			
 			// 
-			double target_x = cp_inc;
+			double target_x = car.cp_inc;
 			double target_y = control_spline(target_x);
 			double target_dist = sqrt(target_x*target_x + target_y*target_y);
 			double N = target_dist/(car.Ts*car.ref_vel*mph_to_mps);
