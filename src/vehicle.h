@@ -14,7 +14,7 @@ class Vehicle{
 		int lane_width;
 		// Global coordinates in [m]
 		double x;
-		double y
+		double y;
 		// Frenet coordinates in [m]
 		double s;
 		double d;
