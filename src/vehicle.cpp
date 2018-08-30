@@ -31,33 +31,34 @@ bool Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	double right_max_rear_s		= 0;
 	
 	// Assume no immediate obstacles at start of check
-	bool cur_front_car		= false;
+	bool cur_front_car	= false;
 	bool cur_rear_car		= false;
 	bool left_front_car	= false;
-	bool left_rear_car		= false;
+	bool left_rear_car	= false;
 	bool right_front_car	= false;
 	bool right_rear_car	= false;
 	
 	double obstacle_d	= 0;
 	double obstacle_s	= 0;
 	int cur_front_id	= -1;
+	int cur_rear_id	= -1;
 	
 	// Check for closest surrounding vehicles in all lanes
 	for (int i = 0; i< sensor_fusion.size(); i++){
 		d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
-		if ((obstacle_d > 4*car.lane) && (obstacle_d < 4+4*car.lane)){
+		if ((obstacle_d > 4*this->lane) && (obstacle_d < 4+4*this->lane)){
 			
 			obstacle_s = sensor_fusion[i][5];
 			// Check if this is closest front car
-			if((obstacle_s > car.s) && (obstacle_s < cur_min_front_s)){
+			if((obstacle_s > this->s) && (obstacle_s < cur_min_front_s)){
 				cur_min_front_s = obstacle_s;
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
 			}
 			// Check if this is closest front car
-			else if((obstacle_s < car.s) && (obstacle_s > cur_max_rear_s)){
+			else if((obstacle_s < this->s) && (obstacle_s > cur_max_rear_s)){
 				cur_max_rear_s = obstacle_s;
 				cur_rear_id 	= i;
 				// Set flag for rear car
@@ -65,26 +66,26 @@ bool Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 			}
 		}
 		// Check for front and rear vehicle in left lane
-		else if((obstacle_d > 0) && (obstacle_d < 4*car.lane)){
+		else if((obstacle_d > 0) && (obstacle_d < 4*this->lane)){
 			
 		}
 		// Check for front and rear vehicle in right lane
-		else if((obstacle_d > 4*car.lane+4) && (obstacle_d < 4*car.lane+8)){
+		else if((obstacle_d > 4*this->lane+4) && (obstacle_d < 4*this->lane+8)){
 			
 		}
 	}	
 		// Project the obstacle's Frenet position prev_path_size steps into the future
 		//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 		// Check gap between preceding vehicle and ego vehicle
-		//(obstacle_s-car.s < cp_inc)
+		//(obstacle_s-this->s < cp_inc)
 		//double vx = sensor_fusion[i][3];
 		//double vy = sensor_fusion[i][4];
 		//double obstacle_speed = sqrt(vx*vx + vy*vy);
 		/*// FSM for changing lanes
-		if(car.lane > 0){
-			car.lane -= 1;
-		}else if (car.lane < 2){
-			car.lane +=1;
+		if(this->lane > 0){
+			this->lane -= 1;
+		}else if (this->lane < 2){
+			this->lane +=1;
 		}*/
 	return true;
 }
