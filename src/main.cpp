@@ -210,7 +210,7 @@ int main() {
     // The 2 signifies a websocket event
     //auto sdata = string(data).substr(0, length);
     //cout << sdata << endl;
-    /*if (length && length > 2 && data[0] == '4' && data[1] == '2') {
+    if (length && length > 2 && data[0] == '4' && data[1] == '2') {
 
       auto s = hasData(data);
 
@@ -401,7 +401,7 @@ int main() {
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
-    }*/
+    }
   });
 
   // We don't need this since we're not using HTTP but if it's removed the
