@@ -21,12 +21,12 @@ void Vehicle::Vehicle(int lane, double max_ref_vel){
 
 void Vehicle::~Vehicle(){}
 
-bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
-    /*
-    Returns a true if a vehicle is found ahead of the current vehicle, false otherwise. The passed reference
-    rVehicle is updated if a vehicle is found.
-    */
-    /*int min_s = this->goal_s;
+/*bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
+    
+    // Returns a true if a vehicle is found ahead of the current vehicle, false otherwise. The passed reference
+    // rVehicle is updated if a vehicle is found.
+    
+    int min_s = this->goal_s;
     bool found_vehicle = false;
     Vehicle temp_vehicle;
     for (map<int, vector<Vehicle>>::iterator it = predictions.begin(); it != predictions.end(); ++it) {
@@ -37,15 +37,15 @@ bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> predictions, int lane,
             found_vehicle = true;
         }
     }
-    return found_vehicle;*/
+    return found_vehicle;
 }
 
 bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
-    /*
-    Returns a true if a vehicle is found behind the current vehicle, false otherwise. The passed reference
-    rVehicle is updated if a vehicle is found.
-    */
-    /*int max_s = -1;
+    
+    ///Returns a true if a vehicle is found behind the current vehicle, false otherwise. The passed reference
+    // rVehicle is updated if a vehicle is found.
+    
+    int max_s = -1;
     bool found_vehicle = false;
     Vehicle temp_vehicle;
     for (map<int, vector<Vehicle>>::iterator it = predictions.begin(); it != predictions.end(); ++it) {
@@ -56,6 +56,6 @@ bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane
             found_vehicle = true;
         }
     }
-    return found_vehicle;*/
-}
+    return found_vehicle;
+}*/
 
