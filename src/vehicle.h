@@ -1,8 +1,7 @@
-
 #ifndef VEHICLE_H
 
 // Class to store ego vehicle-related state and parameters
-Class Vehicle{
+class Vehicle{
 	
 	public:
 		// Members
