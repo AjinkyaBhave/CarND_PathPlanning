@@ -1,5 +1,7 @@
-// Class to store ego vehicle-related state and parameters
 
+#ifndef VEHICLE_H
+
+// Class to store ego vehicle-related state and parameters
 Class Vehicle{
 	
 	public:
@@ -43,4 +45,4 @@ Class Vehicle{
 		bool get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle);
 	
 };
-
+#endif

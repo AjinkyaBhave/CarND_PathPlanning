@@ -9,6 +9,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "spline.h"
+#include "vehicle.h"
 
 using namespace std;
 
@@ -363,7 +364,7 @@ int main() {
 			double target_x = cp_inc;
 			double target_y = control_spline(target_x);
 			double target_dist = sqrt(target_x*target_x + target_y*target_y);
-			double N = target_dist/(car.Ts*ref_vel*mph_to_mps);
+			double N = target_dist/(car.Ts*car.ref_vel*mph_to_mps);
 			double x_inc = target_x/N;
 			double x_offset = 0;
 			
