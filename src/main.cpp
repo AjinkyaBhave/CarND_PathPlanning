@@ -223,12 +223,12 @@ int main() {
          // j[1] is the data JSON object
           
 			// Main car's localization Data
-			double car.x = j[1]["x"];
-			double car.y = j[1]["y"];
-			double car.s = j[1]["s"];
-			double car.d = j[1]["d"];
-			double car.yaw = j[1]["yaw"];
-			double car.speed = j[1]["speed"];
+			car.x = j[1]["x"];
+			car.y = j[1]["y"];
+			car.s = j[1]["s"];
+			car.d = j[1]["d"];
+			car.yaw = j[1]["yaw"];
+			car.speed = j[1]["speed"];
 
 			// Previous path data given to the Planner
 			auto previous_path_x = j[1]["previous_path_x"];
@@ -284,7 +284,7 @@ int main() {
 					// Check future gap between preceding vehicle and ego vehicle
 					if((obstacle_s > car.s) && (obstacle_s-car.s < cp_inc)){
 						// Set flag to take safe actions
-						obstacle_close = true;
+						car.obstacle_close = true;
 						// FSM for changing lanes
 						if(car.lane > 0){
 							car.lane -= 1;
@@ -295,7 +295,7 @@ int main() {
 				}
 			}
 			
-			if(obstacle_close){
+			if(car.obstacle_close){
 				car.ref_vel -= car.ref_vel_dec;
 			}
 			else if(car.ref_vel < car.max_ref_vel){
