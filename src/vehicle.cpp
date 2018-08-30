@@ -1,3 +1,5 @@
+#include "vehicle.h"
+
 void Vehicle::Vehicle(){
 	// Start vehicle in KL state in the middle lane stopped
 	state 			= 0;
