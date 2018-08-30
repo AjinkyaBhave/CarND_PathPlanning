@@ -269,31 +269,6 @@ int main() {
 			//if(prev_path_size > 0){
 				//car.s = end_path_s;
 			//}
-			car.obstacle_close = false;
-			// Check for front vehicle in same lane
-			for (int i = 0; i< sensor_fusion.size(); i++){
-				// Check if detected vehicle is in ego vehicle lane
-				float d = sensor_fusion[i][6];
-				if (d < 4+car.lane*4 && d > 4*car.lane){
-					double vx = sensor_fusion[i][3];
-					double vy = sensor_fusion[i][4];
-					double obstacle_speed = sqrt(vx*vx + vy*vy);
-					double obstacle_s = sensor_fusion[i][5];
-					// Project the obstacle's Frenet position prev_path_size steps into the future
-					//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
-					// Check future gap between preceding vehicle and ego vehicle
-					if((obstacle_s > car.s) && (obstacle_s-car.s < cp_inc)){
-						// Set flag to take safe actions
-						car.obstacle_close = true;
-						// FSM for changing lanes
-						if(car.lane > 0){
-							car.lane -= 1;
-						}else if (car.lane < 2){
-							car.lane +=1;
-						}
-					}
-				}
-			}
 			
 			if(car.obstacle_close){
 				car.ref_vel -= car.ref_vel_dec;

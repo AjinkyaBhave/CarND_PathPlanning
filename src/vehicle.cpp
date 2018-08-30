@@ -21,9 +21,61 @@ Vehicle::Vehicle(int lane, double max_ref_vel){
 
 Vehicle::~Vehicle(){}
 
-/*bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
-    
-    // Returns a true if a vehicle is found ahead of the current vehicle, false otherwise. The passed reference
+bool Vehicle::get_vehicle_ahead(vector< vector<double> > sensor_fusion ) {
+	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
+	double cur_min_front_s		= 1000;
+	double cur_max_rear_s		= 0;
+	double left_min_front_s		= 1000;
+	double left_max_rear_s	 	= 0;
+	double right_min_front_s	= 1000;
+	double right_max_rear_s		= 0;
+	
+	// Assume no immediate obstacles at start of check
+	car.cur_front_car		= false;
+	car.cur_rear_car		= false;
+	car.left_front_car	= false;
+	car.left_rear_car		= false;
+	car.right_front_car	= false;
+	car.right_rear_car	= false;
+	
+	double obstacle_d	= 0;
+	double obstacle_s	= 0;
+	int cur_front_id	= -1;
+	// Check for closest surrounding vehicles in all lanes
+	for (int i = 0; i< sensor_fusion.size(); i++){
+		d = sensor_fusion[i][6];
+		// Check for front and rear vehicle in same lane
+		if (obstacle_d < 4+car.lane*4 && obstacle_d > 4*car.lane){
+			
+			obstacle_s = sensor_fusion[i][5];
+			// Check if this is closest front car
+			if((obstacle_s > car.s) && (obstacle_s < cur_min_front_s)){
+				cur_min_front_s = obstacle_s;
+				cur_front_id    = i;
+				// Set flag for front car
+				car.cur_front_car = true;
+			}else if(){
+				
+			}	
+		}else if(d < 4+car.lane*4 && d > 4*car.lane){
+			
+		}
+	}	
+		// Project the obstacle's Frenet position prev_path_size steps into the future
+		//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		// Check gap between preceding vehicle and ego vehicle
+		//(obstacle_s-car.s < cp_inc)
+		//double vx = sensor_fusion[i][3];
+		//double vy = sensor_fusion[i][4];
+		//double obstacle_speed = sqrt(vx*vx + vy*vy);
+		/*// FSM for changing lanes
+		if(car.lane > 0){
+			car.lane -= 1;
+		}else if (car.lane < 2){
+			car.lane +=1;
+		}*/
+	
+	// Returns a true if a vehicle is found ahead of the current vehicle, false otherwise. The passed reference
     // rVehicle is updated if a vehicle is found.
     
     int min_s = this->goal_s;
