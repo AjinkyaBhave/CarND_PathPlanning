@@ -83,7 +83,7 @@ bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion ) 
 	return true;
 }
 
-bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
+/*bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
     
     ///Returns a true if a vehicle is found behind the current vehicle, false otherwise. The passed reference
     // rVehicle is updated if a vehicle is found.
