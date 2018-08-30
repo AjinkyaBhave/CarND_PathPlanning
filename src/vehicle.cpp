@@ -21,7 +21,7 @@ Vehicle::Vehicle(int lane, double max_ref_vel){
 
 Vehicle::~Vehicle(){}
 
-bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion ) {
+bool Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion ) {
 	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
 	double cur_min_front_s		= 1000;
 	double cur_max_rear_s		= 0;
@@ -55,8 +55,13 @@ bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion ) 
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
-			}else if(){
-				
+			}
+			// Check if this is closest front car
+			else if((obstacle_s < car.s) && (obstacle_s > cur_max_rear_s)){
+				cur_max_rear_s = obstacle_s;
+				cur_rear_id 	= i;
+				// Set flag for rear car
+				cur_rear_car = true;				
 			}
 		}
 		// Check for front and rear vehicle in left lane

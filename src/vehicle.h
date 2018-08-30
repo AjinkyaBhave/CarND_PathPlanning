@@ -1,5 +1,6 @@
 #ifndef VEHICLE_H
 #include <vector>
+
 // Class to store ego vehicle-related state and parameters
 class Vehicle{
 	
@@ -40,7 +41,7 @@ class Vehicle{
 		Vehicle(int lane, double max_ref_vel);
 		//Destructor
 		virtual ~Vehicle();
-		bool get_surrounding_vehicles(vector< vector<double> > sensor_fusion );
+		bool get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion );
 	
 };
 #endif
