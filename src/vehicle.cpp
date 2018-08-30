@@ -130,7 +130,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion){
 	if(cur_front_car){
 		// Check gap between front vehicle and ego vehicle
-		if(obstacle_s - s < cp_inc){
+		if(sensor_fusion[cur_front_id][5] - s < cp_inc){
 			state = 1; // Go to PCLC
 		}
 		else{
