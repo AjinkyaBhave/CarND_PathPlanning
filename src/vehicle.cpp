@@ -80,7 +80,7 @@ bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion ) 
 		}else if (car.lane < 2){
 			car.lane +=1;
 		}*/
-	
+	return true;
 }
 
 bool Vehicle::get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {

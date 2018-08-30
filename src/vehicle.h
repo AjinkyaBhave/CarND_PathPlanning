@@ -40,8 +40,7 @@ class Vehicle{
 		Vehicle(int lane, double max_ref_vel);
 		//Destructor
 		virtual ~Vehicle();
-		bool get_vehicle_ahead(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle);
-		bool get_vehicle_behind(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle);
+		bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion )
 	
 };
 #endif
