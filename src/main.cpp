@@ -73,18 +73,16 @@ int NextWaypoint(double x, double y, double theta, const vector<double> &maps_x,
 	double heading = atan2((map_y-y),(map_x-x));
 
 	double angle = fabs(theta-heading);
-  angle = min(2*pi() - angle, angle);
+	angle = min(2*pi() - angle, angle);
 
-  if(angle > pi()/4)
+	if(angle > pi()/4)
   {
-    closestWaypoint++;
-  if (closestWaypoint == maps_x.size())
-  {
-    closestWaypoint = 0;
-  }
-  }
-
-  return closestWaypoint;
+		closestWaypoint++;
+		if (closestWaypoint == maps_x.size()){
+			closestWaypoint = 0;
+		}
+	}
+	return closestWaypoint;
 }
 
 // Transform from Cartesian x,y coordinates to Frenet s,d coordinates
@@ -162,7 +160,7 @@ vector<double> getXY(double s, double d, const vector<double> &maps_s, const vec
 
 	return {x,y};
 
- }
+}
 
 int main() {
   uWS::Hub h;
@@ -200,15 +198,11 @@ int main() {
   	map_waypoints_dx.push_back(d_x);
   	map_waypoints_dy.push_back(d_y);
   }
+	
+	Vehicle car = Vehicle();
+	
 
-	// Start state of ego vehicle. KL=0, PLCR=1, PLCL=2, LCR=3, LCL=4
-	int state = 0;
-	// Starting lane of ego vehicle. Lane closest to the centre line is 0. Middle lane is 1. Right lane is 2.
-	int lane = 1;
-	// Reference speed of ego vehicle [mph]
-	double ref_vel = 0;
-
-	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &state, &lane, &ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy &car](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -228,12 +222,12 @@ int main() {
          // j[1] is the data JSON object
           
 			// Main car's localization Data
-			double car_x = j[1]["x"];
-			double car_y = j[1]["y"];
-			double car_s = j[1]["s"];
-			double car_d = j[1]["d"];
-			double car_yaw = j[1]["yaw"];
-			double car_speed = j[1]["speed"];
+			double car.x = j[1]["x"];
+			double car.y = j[1]["y"];
+			double car.s = j[1]["s"];
+			double car.d = j[1]["d"];
+			double car.yaw = j[1]["yaw"];
+			double car.speed = j[1]["speed"];
 
 			// Previous path data given to the Planner
 			auto previous_path_x = j[1]["previous_path_x"];
@@ -256,22 +250,12 @@ int main() {
 			vector<double> control_points_x;
 			vector<double> control_points_y;
 			
-			// Sample time of simulator in seconds
-			double Ts = 0.02;
-			// Maximum reference speed of ego vehicle [mph]
-			double max_ref_vel = 49.5;
-			// Change in ref_vel in mph to achieve 5 m/s^2 average acceleration
-			double ref_vel_dec = 0.224;
 			// Conversion from mph to m/s
 			double mph_to_mps = 0.447;
-			// Length of current path in number of points 
-			int path_size = 50;
 			// Length of previous path in number of points
 			int prev_path_size = previous_path_x.size();
 			// Distance between successive control points in Frenet coordinates in metres
 			int cp_inc = 30;
-			// Flag to initiate reducing current speed
-			bool obstacle_close = false;
 			
 			// Reference starting point for interpolation. 
 			// Could be either ego vehicle state or end point of previous path.
@@ -282,14 +266,14 @@ int main() {
 			double prev_ref_y;
 			
 			/*if(prev_path_size > 0){
-				car_s = end_path_s;
+				car.s = end_path_s;
 			}*/
 			
 			// Check for front vehicle in same lane
 			for (int i = 0; i< sensor_fusion.size(); i++){
 				// Check if detected vehicle is in ego vehicle lane
 				float d = sensor_fusion[i][6];
-				if (d < 4+lane*4 && d > 4*lane){
+				if (d < 4+car.lane*4 && d > 4*car.lane){
 					double vx = sensor_fusion[i][3];
 					double vy = sensor_fusion[i][4];
 					double obstacle_speed = sqrt(vx*vx + vy*vy);
@@ -297,33 +281,33 @@ int main() {
 					// Project the obstacle's Frenet position prev_path_size steps into the future
 					//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 					// Check future gap between preceding vehicle and ego vehicle
-					if((obstacle_s > car_s) && (obstacle_s-car_s < cp_inc)){
+					if((obstacle_s > car.s) && (obstacle_s-car.s < cp_inc)){
 						// Set flag to take safe actions
 						obstacle_close = true;
 						// FSM for changing lanes
-						if(lane > 0){
-							lane -= 1;
-						}else if (lane < 2){
-							lane +=1;
+						if(car.lane > 0){
+							car.lane -= 1;
+						}else if (car.lane < 2){
+							car.lane +=1;
 						}
 					}
 				}
 			}
 			
 			if(obstacle_close){
-				ref_vel -= ref_vel_dec;
+				car.ref_vel -= car.ref_vel_dec;
 			}
 			else if(ref_vel < max_ref_vel){
-				ref_vel += ref_vel_dec;
+				car.ref_vel += car.ref_vel_dec;
 			}
 			// If previous path is too small
 			if(prev_path_size < 2){
 				// Make path locally tangent to car heading
-				ref_x = car_x;
-				ref_y = car_y;
-				ref_yaw = deg2rad(car_yaw);
-				prev_ref_x = car_x - cos(car_yaw);
-				prev_ref_y = car_y - sin(car_yaw);
+				ref_x = car.x;
+				ref_y = car.y;
+				ref_yaw = deg2rad(car.yaw);
+				prev_ref_x = car.x - cos(car.yaw);
+				prev_ref_y = car.y - sin(car.yaw);
 				//printf("\n using car ref\n");
 			}
 			// Use previous path's endpoint as reference
@@ -333,7 +317,7 @@ int main() {
 				prev_ref_x = previous_path_x[prev_path_size-2];
 				prev_ref_y = previous_path_y[prev_path_size-2];
 				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
-				car_s = end_path_s;
+				car.s = end_path_s;
 				//printf("\n using prev_path\n");
 			}
 			control_points_x.push_back(prev_ref_x);
@@ -342,9 +326,9 @@ int main() {
 			control_points_y.push_back(ref_y);
 			
 			// Add evenly spaced points cp_inc apart in Frenet coordinates ahead of starting reference 
-			vector<double> next_cp0 = getXY(car_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp1 = getXY(car_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp2 = getXY(car_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp0 = getXY(car.s+cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp1 = getXY(car.s+2*cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+			vector<double> next_cp2 = getXY(car.s+3*cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 			
 			control_points_x.push_back(next_cp0[0]);
 			control_points_x.push_back(next_cp1[0]);
