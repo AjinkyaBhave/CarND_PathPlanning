@@ -269,7 +269,7 @@ int main() {
 			//if(prev_path_size > 0){
 				//car.s = end_path_s;
 			//}
-			
+			car.obstacle = false;
 			// Check for front vehicle in same lane
 			for (int i = 0; i< sensor_fusion.size(); i++){
 				// Check if detected vehicle is in ego vehicle lane
