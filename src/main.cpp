@@ -202,7 +202,7 @@ int main() {
 	Vehicle car = Vehicle();
 	
 
-	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy &car](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+	h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy, &car](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -297,7 +297,7 @@ int main() {
 			if(obstacle_close){
 				car.ref_vel -= car.ref_vel_dec;
 			}
-			else if(ref_vel < max_ref_vel){
+			else if(car.ref_vel < car.max_ref_vel){
 				car.ref_vel += car.ref_vel_dec;
 			}
 			// If previous path is too small
@@ -363,12 +363,12 @@ int main() {
 			double target_x = cp_inc;
 			double target_y = control_spline(target_x);
 			double target_dist = sqrt(target_x*target_x + target_y*target_y);
-			double N = target_dist/(Ts*ref_vel*mph_to_mps);
+			double N = target_dist/(car.Ts*ref_vel*mph_to_mps);
 			double x_inc = target_x/N;
 			double x_offset = 0;
 			
 			// Complete trajectory generation with spline points
-			for(int i=0; i < path_size - prev_path_size; i++ ){
+			for(int i=0; i < car.path_size - prev_path_size; i++ ){
 				
 				double x_spline = x_offset + x_inc;
 				double y_spline = control_spline(x_spline);
