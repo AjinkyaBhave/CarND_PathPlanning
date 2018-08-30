@@ -1,6 +1,6 @@
 #include "vehicle.h"
 
-void Vehicle::Vehicle(){
+Vehicle::Vehicle(){
 	// Start vehicle in KL state in the middle lane stopped
 	state 			= 0;
 	lane  			= 1;
@@ -12,14 +12,14 @@ void Vehicle::Vehicle(){
 	obstacle_close	= false;
 }
 
-void Vehicle::Vehicle(int lane, double max_ref_vel){
+Vehicle::Vehicle(int lane, double max_ref_vel){
 	// Start vehicle in KL state in the middle lane stopped
 	Vehicle();
 	this->lane  			= lane;
 	this->max_ref_vel 	= max_ref_vel;
 }
 
-void Vehicle::~Vehicle(){}
+Vehicle::~Vehicle(){}
 
 /*bool Vehicle::get_vehicle_ahead(map<int, vector<Vehicle>> predictions, int lane, Vehicle & rVehicle) {
     
