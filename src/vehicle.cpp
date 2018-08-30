@@ -31,16 +31,17 @@ bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion ) 
 	double right_max_rear_s		= 0;
 	
 	// Assume no immediate obstacles at start of check
-	car.cur_front_car		= false;
-	car.cur_rear_car		= false;
-	car.left_front_car	= false;
-	car.left_rear_car		= false;
-	car.right_front_car	= false;
-	car.right_rear_car	= false;
+	bool cur_front_car		= false;
+	bool cur_rear_car		= false;
+	bool left_front_car	= false;
+	bool left_rear_car		= false;
+	bool right_front_car	= false;
+	bool right_rear_car	= false;
 	
 	double obstacle_d	= 0;
 	double obstacle_s	= 0;
 	int cur_front_id	= -1;
+	
 	// Check for closest surrounding vehicles in all lanes
 	for (int i = 0; i< sensor_fusion.size(); i++){
 		d = sensor_fusion[i][6];
@@ -53,7 +54,7 @@ bool Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion ) 
 				cur_min_front_s = obstacle_s;
 				cur_front_id    = i;
 				// Set flag for front car
-				car.cur_front_car = true;
+				cur_front_car = true;
 			}else if(){
 				
 			}
