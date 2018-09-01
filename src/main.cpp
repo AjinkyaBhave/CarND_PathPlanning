@@ -245,6 +245,8 @@ int main() {
 			// Get environment around ego vehicle
 			//car.get_surrounding_vehicles(sensor_fusion);
 			double cur_min_front_s = 8*car.cp_inc;
+			double obstacle_s = 0;
+			double obstacle_d = 0;
 			car.cur_front_car = false;			
 			for (int i = 0; i< sensor_fusion.size(); i++){
 				obstacle_d = sensor_fusion[i][6];
