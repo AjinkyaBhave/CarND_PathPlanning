@@ -51,7 +51,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	double obstacle_s	= 0;
 	
 	// Assume no immediate obstacles at start of check
-	cur_front_car		= false;	
+	cur_front_car		= false;
 	cur_rear_car		= false;
 	left_front_car		= false;
 	left_rear_car		= false;
@@ -159,6 +159,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion){
 	if(state == STATE_KL){
+		print("initial state: %d\, front car: %d \n", state, cur_front_car);
 		if(cur_front_car){
 			// Gap between front vehicle and ego vehicle is too small
 			if(sensor_fusion[cur_front_id][5] - s < cp_inc){
@@ -166,10 +167,12 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 				ref_vel -= ref_vel_delta;
 				// Check current lane to decide whether to change left or right
 				if(lane != LEFT_LANE){
-					state = STATE_PLCL; 
+					print("new state: PLCL\n");
+					//state = STATE_PLCL; 
 				}
 				else{
-					state = STATE_PLCR;
+					print("new state: PLCR\n");
+					//state = STATE_PLCR;
 				}
 			}
 			// Gap between front vehicle and ego vehicle is large enough to accelerate
