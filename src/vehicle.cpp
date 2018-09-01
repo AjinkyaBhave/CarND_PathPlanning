@@ -168,7 +168,7 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 			printf("front car: %d \n", cur_front_car);
 			// Gap between front vehicle and ego vehicle is too small
 			if((sensor_fusion[cur_front_id][5] - s) < cp_inc){
-				printf("reduce speed: %d \n");
+				printf("reduce speed\n");
 				// Reduce current speed
 				ref_vel -= ref_vel_delta;
 				// Check current lane to decide whether to change left or right
@@ -186,7 +186,7 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 				double vx = sensor_fusion[cur_front_id][3];
 				double vy = sensor_fusion[cur_front_id][4];
 				double front_speed = sqrt(vx*vx + vy*vy);
-				if(ref_vel < front_speed){
+				if(ref_vel < max_ref_vel){
 					ref_vel += ref_vel_delta;
 				}
 			}
