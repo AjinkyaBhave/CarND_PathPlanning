@@ -6,6 +6,7 @@ Vehicle::Vehicle(){
 	// Start vehicle in KL state in the centre lane with zero speed
 	state 			= STATE_KL;
 	lane  			= CENTRE_LANE;
+	lane_width		= 4;
 	ref_vel			= 0.0;
 	max_ref_vel 	= 49.5;
 	ref_vel_delta 	= 0.224; // 5 m/s^2 average acceleration
@@ -71,19 +72,19 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	
 	// Check for closest surrounding vehicles in all lanes
 	for (int i = 0; i< sensor_fusion.size(); i++){
-		d = sensor_fusion[i][6];
+		obstacle_d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
-		if ((obstacle_d > 4*this->lane) && (obstacle_d < 4+4*this->lane)){
+		if ((obstacle_d > lane_width*lane) && (obstacle_d < lane_width*(lane+1))){
 			obstacle_s = sensor_fusion[i][5];
 			// Check if this is closest front car
-			if((obstacle_s > this->s) && (obstacle_s < cur_min_front_s)){
+			if((obstacle_s > s) && (obstacle_s < cur_min_front_s)){
 				cur_min_front_s = obstacle_s;
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
 			}
 			// Check if this is closest rear car
-			else if((obstacle_s < this->s) && (obstacle_s > cur_max_rear_s)){
+			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s)){
 				cur_max_rear_s = obstacle_s;
 				cur_rear_id 	= i;
 				// Set flag for rear car
@@ -91,39 +92,43 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 			}
 		}
 		// Check for front and rear vehicle in left lane
-		else if((obstacle_d > 0) && (obstacle_d < 4*this->lane)){
-			obstacle_s = sensor_fusion[i][5];
-			// Check if this is closest left front car
-			if((obstacle_s > this->s) && (obstacle_s < left_min_front_s)){
-				left_min_front_s = obstacle_s;
-				left_front_id    = i;
-				// Set flag for front car
-				left_front_car = true;
-			}
-			// Check if this is closest left rear car
-			else if((obstacle_s < this->s) && (obstacle_s > left_max_rear_s)){
-				left_max_rear_s = obstacle_s;
-				left_rear_id 	= i;
-				// Set flag for rear car
-				left_rear_car = true;				
-			}
+		else if(lane ! LEFT_LANE) {
+			if((obstacle_d > lane_width*(lane-1)) && (obstacle_d < lane_width*lane)){
+				obstacle_s = sensor_fusion[i][5];
+				// Check if this is closest left front car
+				if((obstacle_s > s) && (obstacle_s < left_min_front_s)){
+					left_min_front_s = obstacle_s;
+					left_front_id    = i;
+					// Set flag for front car
+					left_front_car = true;
+				}
+				// Check if this is closest left rear car
+				else if((obstacle_s < s) && (obstacle_s > left_max_rear_s)){
+					left_max_rear_s = obstacle_s;
+					left_rear_id 	= i;
+					// Set flag for rear car
+					left_rear_car = true;
+				}
+			}	
 		}
 		// Check for front and rear vehicle in right lane
-		else if((obstacle_d > 4*this->lane+4) && (obstacle_d < 4*this->lane+8)){
-			obstacle_s = sensor_fusion[i][5];
-			// Check if this is closest right front car
-			if((obstacle_s > this->s) && (obstacle_s < left_min_front_s)){
-				left_min_front_s = obstacle_s;
-				left_front_id    = i;
-				// Set flag for front car
-				left_front_car = true;
-			}
-			// Check if this is closest right rear car
-			else if((obstacle_s < this->s) && (obstacle_s > left_max_rear_s)){
-				left_max_rear_s = obstacle_s;
-				left_rear_id 	= i;
-				// Set flag for rear car
-				left_rear_car = true;				
+		else if(lane != RIGHT_LANE){ 
+			if((obstacle_d > lane_width*(lane+1)) && (obstacle_d < lane_width*(lane+2))){
+				obstacle_s = sensor_fusion[i][5];
+				// Check if this is closest right front car
+				if((obstacle_s > this->s) && (obstacle_s < left_min_front_s)){
+					left_min_front_s = obstacle_s;
+					left_front_id    = i;
+					// Set flag for front car
+					left_front_car = true;
+				}
+				// Check if this is closest right rear car
+				else if((obstacle_s < this->s) && (obstacle_s > left_max_rear_s)){
+					left_max_rear_s = obstacle_s;
+					left_rear_id 	= i;
+					// Set flag for rear car
+					left_rear_car = true;				
+				}
 			}
 		}
 	}
@@ -160,7 +165,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion){
 	if(state == STATE_KL){
-		printf("initial state: %d\, front car: %d \n", state, cur_front_car);
+		printf("initial state: %d, front car: %d \n", state, cur_front_car);
 		if(cur_front_car){
 			// Gap between front vehicle and ego vehicle is too small
 			if(sensor_fusion[cur_front_id][5] - s < cp_inc){
