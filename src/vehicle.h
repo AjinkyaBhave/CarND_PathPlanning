@@ -70,7 +70,7 @@ class Vehicle{
 		virtual ~Vehicle();
 		void get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion);
 		void choose_next_state(std::vector< std::vector<double> > sensor_fusion);
-		std::vector<int>  successor_states(std::vector< std::vector<double> > sensor_fusion);
+		//std::vector<int> successor_states(std::vector< std::vector<double> > sensor_fusion);
 	
 };
 #endif

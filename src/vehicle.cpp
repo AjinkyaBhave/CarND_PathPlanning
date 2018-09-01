@@ -127,7 +127,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	}
 }
 
-std::vector<int> Vehicle::successor_states() {
+/*std::vector<int> Vehicle::successor_states() {
 	
 	// Temporary array to store successor states
 	std::vector<int> states;
@@ -154,7 +154,8 @@ std::vector<int> Vehicle::successor_states() {
 	}
 	//If state is "LCL" or "LCR", then just return "KL"
 	return states;
-}
+}*/
+
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion){
 	if(state == STATE_KL){
 		if(cur_front_car){
@@ -165,11 +166,13 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 				// Check current lane to decide whether to change left or right
 				if(lane != LEFT_LANE){
 					state = STATE_PLCL; 
-				}else{
+				}
+				else{
 					state = STATE_PLCR;
 				}
+			}
 			// Gap between front vehicle and ego vehicle is large enough to accelerate
-			}else(){
+			else{
 				double vx = sensor_fusion[i][3];
 				double vy = sensor_fusion[i][4];
 				double front_speed = sqrt(vx*vx + vy*vy);
@@ -180,8 +183,7 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 		}
 		// No obstacle in front. Try to go at speed limit.
 		else if(ref_vel < max_ref_vel){
-			
-			ref_vel += ref_vel_delta;
+				ref_vel += ref_vel_delta;
 		}
 	}
 	
