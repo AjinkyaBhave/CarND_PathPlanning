@@ -1,5 +1,6 @@
 #include "vehicle.h"
 #include <math.h>
+#include <iostream>
 
 Vehicle::Vehicle(){
 	// Start vehicle in KL state in the centre lane with zero speed
