@@ -68,7 +68,6 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	right_front_id	= -1;
 	right_rear_id	= -1;
 
-	printf("sensor fusion size: %d\n", sensor_fusion.size());
 	// Check for closest surrounding vehicles in all lanes
 	for (int i = 0; i< sensor_fusion.size(); i++){
 		obstacle_d = sensor_fusion[i][6];
@@ -81,7 +80,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
-				printf("ID: %d, obs s: , s: %f, obs_d: %f, d: %f\n", cur_front_id, obstacle_s, s, obstacle_d, d);
+				printf("ID: %d, obs s: %f, s: %f, obs_d: %f, d: %f\n", cur_front_id, obstacle_s, s, obstacle_d, d);
 			}
 			// Check if this is closest rear car
 			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s)){
