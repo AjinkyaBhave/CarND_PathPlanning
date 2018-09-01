@@ -82,13 +82,14 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
+				printf("ID: %d obs s: %f, s: %f\n", cur_front_id, obstacle_s, s);
 			}
 			// Check if this is closest rear car
 			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s)){
 				cur_max_rear_s = obstacle_s;
 				cur_rear_id 	= i;
 				// Set flag for rear car
-				cur_rear_car = true;				
+				cur_rear_car = true;
 			}
 		}
 		// Check for front and rear vehicle in left lane
