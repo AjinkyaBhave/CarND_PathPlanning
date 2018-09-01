@@ -1,36 +1,37 @@
 #include "vehicle.h"
 
 Vehicle::Vehicle(){
-	// Start vehicle in KL state in the middle lane stopped
-	state 			= 0;
-	lane  			= 1;
-	ref_vel			= 0;
+	// Start vehicle in KL state in the centre lane with zero speed
+	state 			= STATE_KL;
+	lane  			= CENTRE_LANE;
+	ref_vel			= 0.0;
 	max_ref_vel 	= 49.5;
 	ref_vel_delta 	= 0.224; // 5 m/s^2 average acceleration
+	lane_offset 	= 0.1;
 	Ts 				= 0.02;
 	path_size		= 50;
 	cp_inc			= 30;
 	cur_front_car	= false;
-	cur_rear_car		= false;
+	cur_rear_car	= false;
 	left_front_car	= false;
 	left_rear_car	= false;
-	right_front_car	= false;
+	right_front_car= false;
 	right_rear_car	= false;
 	
 	// Vehicle IDs of closest surround cars will be saved here
 	cur_front_id	= -1;
-	cur_rear_id	= -1;
+	cur_rear_id		= -1;
 	left_front_id	= -1;
 	left_rear_id	= -1;
-	right_front_id= -1;
+	right_front_id	= -1;
 	right_rear_id	= -1;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
 	// Start vehicle in KL state in the middle lane stopped
 	Vehicle();
-	this->lane  			= lane;
-	this->max_ref_vel 	= max_ref_vel;
+	this->lane = lane;
+	this->max_ref_vel = max_ref_vel;
 }
 
 Vehicle::~Vehicle(){}
@@ -124,33 +125,66 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 			}
 		}
 	}
-	
 }
 
+std::vector<int> Vehicle::successor_states() {
+	
+	// Temporary array to store successor states
+	std::vector<int> states;
+	
+	// FSM to decide next possible states from current state
+	if(state == STATE_KL){
+		states.push_back(STATE_KL);
+		states.push_back(STATE_PLCL);
+		states.push_back(STATE_PLCR);
+	}else if(state == STATE_PLCL){
+		if(lane != LEFT_LANE) {
+			states.push_back(STATE_PLCL);
+			states.push_back(STATE_LCL);
+		}
+	}else if(state == STATE_PLCR){
+		if(lane != RIGHT_LANE){
+			states.push_back(STATE_PLCR);
+			states.push_back(STATE_LCR);
+		}
+	}else if(state == STATE_LCL){
+		if(fabs(car.d - 4*lane+2) < lat_offset){
+			states.push_back(STATE_KL);
+		}
+	}
+	//If state is "LCL" or "LCR", then just return "KL"
+	return states;
+}
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion){
-	if(cur_front_car){
-		// Check gap between front vehicle and ego vehicle
-		if(sensor_fusion[cur_front_id][5] - s < cp_inc){
-			state = 1; // Go to PCLC
+	if(state == STATE_KL){
+		if(cur_front_car){
+			// Gap between front vehicle and ego vehicle is too small
+			if(sensor_fusion[cur_front_id][5] - s < cp_inc){
+				// Reduce current speed
+				ref_vel -= ref_vel_delta;
+				// Check current lane to decide whether to change left or right
+				if(lane != LEFT_LANE){
+					state = STATE_PLCL; 
+				}else{
+					state = STATE_PLCR;
+				}
+			// Gap between front vehicle and ego vehicle is large enough to accelerate
+			}else(){
+				double vx = sensor_fusion[i][3];
+				double vy = sensor_fusion[i][4];
+				double front_speed = sqrt(vx*vx + vy*vy);
+				if(ref_vel < front_speed){
+					ref_vel += ref_vel_delta;
+				}
+			}
 		}
-		else{
-			state = 0; // Stay in KL
+		// No obstacle in front. Try to go at speed limit.
+		else if(ref_vel < max_ref_vel){
+			
+			ref_vel += ref_vel_delta;
 		}
 	}
-	else if(ref_vel < max_ref_vel){
-		
-		ref_vel += ref_vel_delta;
-	}
+	
 	// Project the obstacle's Frenet position prev_path_size steps into the future
 	//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
-
-	//double vx = sensor_fusion[i][3];
-	//double vy = sensor_fusion[i][4];
-	//double obstacle_speed = sqrt(vx*vx + vy*vy);
-	/*// FSM for changing lanes
-	if(this->lane > 0){
-		this->lane -= 1;
-	}else if (this->lane < 2){
-		this->lane +=1;
-	}*/
 }
