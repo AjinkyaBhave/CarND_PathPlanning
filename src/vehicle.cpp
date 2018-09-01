@@ -1,4 +1,5 @@
 #include "vehicle.h"
+#include <math.h>
 
 Vehicle::Vehicle(){
 	// Start vehicle in KL state in the centre lane with zero speed
@@ -173,8 +174,8 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 			}
 			// Gap between front vehicle and ego vehicle is large enough to accelerate
 			else{
-				double vx = sensor_fusion[i][3];
-				double vy = sensor_fusion[i][4];
+				double vx = sensor_fusion[cur_front_id][3];
+				double vy = sensor_fusion[cur_front_id][4];
 				double front_speed = sqrt(vx*vx + vy*vy);
 				if(ref_vel < front_speed){
 					ref_vel += ref_vel_delta;

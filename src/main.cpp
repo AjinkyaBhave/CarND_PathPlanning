@@ -242,6 +242,8 @@ int main() {
 
 			json msgJson;
 			
+			// Get environment around ego vehicle
+			car.get_surrounding_vehicles(sensor_fusion);
 			// Decide next state and new ref_vel for ego vehicle
 			car.choose_next_state(sensor_fusion);
 			
