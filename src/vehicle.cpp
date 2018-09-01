@@ -92,7 +92,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 			}
 		}
 		// Check for front and rear vehicle in left lane
-		else if(lane ! LEFT_LANE) {
+		else if(lane != LEFT_LANE) {
 			if((obstacle_d > lane_width*(lane-1)) && (obstacle_d < lane_width*lane)){
 				obstacle_s = sensor_fusion[i][5];
 				// Check if this is closest left front car
