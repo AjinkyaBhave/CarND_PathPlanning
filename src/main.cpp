@@ -241,8 +241,10 @@ int main() {
 			auto sensor_fusion = j[1]["sensor_fusion"];
 
 			json msgJson;
+			
 			// Decide next state and new ref_vel for ego vehicle
 			car.choose_next_state(sensor_fusion);
+			
 			// List of actual (x,y) waypoints used for trajectory generation
 			vector<double> next_x_vals;
 			vector<double> next_y_vals;
