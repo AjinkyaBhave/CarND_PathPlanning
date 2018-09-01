@@ -243,8 +243,8 @@ int main() {
 			json msgJson;
 			
 			// Get environment around ego vehicle
-			//car.get_surrounding_vehicles(sensor_fusion);
-			double cur_min_front_s = ROAD_LENGTH;
+			car.get_surrounding_vehicles(sensor_fusion);
+			/*double cur_min_front_s = ROAD_LENGTH;
 			double obstacle_s = 0;
 			double obstacle_d = 0;
 			car.cur_front_car = false;			
@@ -263,7 +263,7 @@ int main() {
 						printf("ID: %d, obs s: %f, s: %f, obs_d: %f, d: %f\n", car.cur_front_id, obstacle_s, car.s, obstacle_d, car.d);
 					}
 				}
-			}
+			}*/
 			// Decide next state and new ref_vel for ego vehicle
 			car.choose_next_state(sensor_fusion);
 			

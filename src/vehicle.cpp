@@ -41,11 +41,11 @@ Vehicle::~Vehicle(){}
 
 void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion) {
 	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
-	double cur_min_front_s		= 8*cp_inc;
+	double cur_min_front_s		= ROAD_LENGTH;
 	double cur_max_rear_s		= 0;
-	double left_min_front_s		= 8*cp_inc;
+	double left_min_front_s		= ROAD_LENGTH;
 	double left_max_rear_s	 	= 0;
-	double right_min_front_s	= 8*cp_inc;
+	double right_min_front_s	= ROAD_LENGTH;
 	double right_max_rear_s		= 0;
 	
 	// Temporary variables to store Frenet coordinates of surrounding cars
@@ -80,7 +80,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
-				printf("ID: %d, obs s: %f, s: %f, obs_d: %f, d: %f\n", cur_front_id, obstacle_s, s, obstacle_d, d);
+				//printf("ID: %d, obs s: %f, s: %f, obs_d: %f, d: %f\n", cur_front_id, obstacle_s, s, obstacle_d, d);
 			}
 			// Check if this is closest rear car
 			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s)){
@@ -168,6 +168,7 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 			printf("front car: %d \n", cur_front_car);
 			// Gap between front vehicle and ego vehicle is too small
 			if((sensor_fusion[cur_front_id][5] - s) < cp_inc){
+				printf("reduce speed: %d \n");
 				// Reduce current speed
 				ref_vel -= ref_vel_delta;
 				// Check current lane to decide whether to change left or right
