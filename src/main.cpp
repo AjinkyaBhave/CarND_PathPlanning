@@ -244,7 +244,7 @@ int main() {
 			
 			// Get environment around ego vehicle
 			//car.get_surrounding_vehicles(sensor_fusion);
-			double cur_min_front_s = 8*car.cp_inc;
+			double cur_min_front_s = 4*car.cp_inc;
 			double obstacle_s = 0;
 			double obstacle_d = 0;
 			car.cur_front_car = false;			
@@ -255,7 +255,7 @@ int main() {
 					printf("Front car d: %f\n", obstacle_d);
 					obstacle_s = sensor_fusion[i][5];
 					// Check if this is closest front car
-					if((obstacle_s > car.s) && (obstacle_s < cur_min_front_s)){
+					if((obstacle_s > car.s) && (obstacle_s - car.s < cur_min_front_s)){
 						cur_min_front_s = obstacle_s;
 						car.cur_front_id    = i;
 						// Set flag for front car
