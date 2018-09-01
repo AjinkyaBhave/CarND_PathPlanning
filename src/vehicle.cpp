@@ -6,7 +6,7 @@ Vehicle::Vehicle(){
 	// Start vehicle in KL state in the centre lane with zero speed
 	state 			= STATE_KL;
 	lane  			= CENTRE_LANE;
-	lane_width		= 4;
+	lane_width		= 4.0;
 	ref_vel			= 0.0;
 	max_ref_vel 	= 49.5;
 	ref_vel_delta 	= 0.224; // 5 m/s^2 average acceleration
@@ -41,11 +41,11 @@ Vehicle::~Vehicle(){}
 
 void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion) {
 	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
-	double cur_min_front_s		= 2*cp_inc;
+	double cur_min_front_s		= 4*cp_inc;
 	double cur_max_rear_s		= 0;
-	double left_min_front_s		= 2*cp_inc;
+	double left_min_front_s		= 4*cp_inc;
 	double left_max_rear_s	 	= 0;
-	double right_min_front_s	= 2*cp_inc;
+	double right_min_front_s	= 4*cp_inc;
 	double right_max_rear_s		= 0;
 	
 	// Temporary variables to store Frenet coordinates of surrounding cars
@@ -74,15 +74,14 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		obstacle_d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
 		if ((obstacle_d > lane_width*lane) && (obstacle_d < lane_width*(lane+1))){
-			printf("obs d: %f, d: %f\n", obstacle_d, this->d);
 			obstacle_s = sensor_fusion[i][5];
 			// Check if this is closest front car
-			if((obstacle_s > this->s) && (obstacle_s < cur_min_front_s)){
+			if((obstacle_s > s) && (obstacle_s < cur_min_front_s)){
 				cur_min_front_s = obstacle_s;
 				cur_front_id    = i;
 				// Set flag for front car
 				cur_front_car = true;
-				printf("ID: %d obs s: %f, s: %f\n", cur_front_id, obstacle_s, s);
+				printf("ID: %d, obs s: , s: %f, obs_d: %f, d: %f\n", cur_front_id, obstacle_s, s, obstacle_d, d);
 			}
 			// Check if this is closest rear car
 			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s)){

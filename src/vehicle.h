@@ -21,7 +21,7 @@ class Vehicle{
 		// Starting lane of ego vehicle. Lane closest to the centre line is 0. Middle lane is 1. Right lane is 2.
 		int lane;
 		// Width of each lane in [m]
-		int lane_width;
+		double lane_width;
 		// Global coordinates in [m]
 		double x;
 		double y;
@@ -44,7 +44,7 @@ class Vehicle{
 		// Length of current path in number of points 
 		int path_size;
 		// Distance between successive control points in Frenet coordinates in metres
-		int cp_inc;
+		double cp_inc;
 		
 		// Indicates if surrounding car of this type is present
 		bool cur_front_car;
