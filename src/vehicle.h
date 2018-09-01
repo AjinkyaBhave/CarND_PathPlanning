@@ -11,6 +11,8 @@
 #define CENTRE_LANE	1
 #define RIGHT_LANE	2
 
+#define ROAD_LENGTH 6950
+
 // Class to store ego vehicle-related state and parameters
 class Vehicle{
 	
