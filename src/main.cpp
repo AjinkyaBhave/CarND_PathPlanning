@@ -243,7 +243,24 @@ int main() {
 			json msgJson;
 			
 			// Get environment around ego vehicle
-			car.get_surrounding_vehicles(sensor_fusion);
+			//car.get_surrounding_vehicles(sensor_fusion);
+			double cur_min_front_s = 8*car.cp_inc;
+			car.cur_front_car = false;			
+			for (int i = 0; i< sensor_fusion.size(); i++){
+				obstacle_d = sensor_fusion[i][6];
+				// Check for front and rear vehicle in same lane
+				if ((obstacle_d > car.lane_width*car.lane) && (obstacle_d < car.lane_width*(car.lane+1))){
+					obstacle_s = sensor_fusion[i][5];
+					// Check if this is closest front car
+					if((obstacle_s > car.s) && (obstacle_s < cur_min_front_s)){
+						cur_min_front_s = obstacle_s;
+						car.cur_front_id    = i;
+						// Set flag for front car
+						car.cur_front_car = true;
+						printf("ID: %d, obs s: %f, s: %f, obs_d: %f, d: %f\n", car.cur_front_id, obstacle_s, car.s, obstacle_d, car.d);
+					}
+				}
+			}
 			// Decide next state and new ref_vel for ego vehicle
 			car.choose_next_state(sensor_fusion);
 			
