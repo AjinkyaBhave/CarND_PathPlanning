@@ -252,6 +252,7 @@ int main() {
 				obstacle_d = sensor_fusion[i][6];
 				// Check for front and rear vehicle in same lane
 				if ((obstacle_d > car.lane_width*car.lane) && (obstacle_d < car.lane_width*(car.lane+1))){
+					printf("Front car d: %f\n", obstacle_d);
 					obstacle_s = sensor_fusion[i][5];
 					// Check if this is closest front car
 					if((obstacle_s > car.s) && (obstacle_s < cur_min_front_s)){
