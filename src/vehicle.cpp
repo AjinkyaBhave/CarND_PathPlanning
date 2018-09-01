@@ -160,7 +160,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion){
 	if(state == STATE_KL){
-		print("initial state: %d\, front car: %d \n", state, cur_front_car);
+		printf("initial state: %d\, front car: %d \n", state, cur_front_car);
 		if(cur_front_car){
 			// Gap between front vehicle and ego vehicle is too small
 			if(sensor_fusion[cur_front_id][5] - s < cp_inc){
@@ -168,11 +168,11 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 				ref_vel -= ref_vel_delta;
 				// Check current lane to decide whether to change left or right
 				if(lane != LEFT_LANE){
-					print("new state: PLCL\n");
+					printf("new state: PLCL\n");
 					//state = STATE_PLCL; 
 				}
 				else{
-					print("new state: PLCR\n");
+					printf("new state: PLCR\n");
 					//state = STATE_PLCR;
 				}
 			}
