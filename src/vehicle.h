@@ -71,7 +71,7 @@ class Vehicle{
 		// Timer threshold to switch back to STATE_KL from STATE_PLCx
 		int PLC_count_threshold;
 		// Distance of ego car from lane centre to check end of STATE_LCx
-		double lane_ctr_threshold = 0.001;
+		double lane_ctr_threshold; 
 
 		// Methods
 		// Constructors
