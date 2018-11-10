@@ -33,6 +33,8 @@ Vehicle::Vehicle(){
 	PLC_count	= 0;
 	// Timer threshold to switch back to STATE_KL from STATE_PLCx
 	PLC_count_threshold = 3;
+	// Distance of ego car from lane centre to check end of STATE_LCx
+	lane_ctr_threshold = 0.001;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
@@ -289,7 +291,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 	if(right_rear_car){
 		printf("right rear car \n");
 		// Gap between rear right vehicle and ego vehicle is too small
-		if((s - sensor_fusion[lright_rear_id][5]) < cp_inc){
+		if((s - sensor_fusion[right_rear_id][5]) < cp_inc){
 			printf("reduce speed\n");
 			// Reduce current speed
 			ref_vel -= ref_vel_delta;
