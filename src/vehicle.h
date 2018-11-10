@@ -1,4 +1,5 @@
 #ifndef VEHICLE_H
+
 #include <vector>
 
 #define STATE_KL		0
@@ -6,6 +7,7 @@
 #define STATE_PLCR	2
 #define STATE_LCL		3
 #define STATE_LCR		4
+#define STATE_LC		5
 
 #define LEFT_LANE		0
 #define CENTRE_LANE	1
@@ -63,6 +65,13 @@ class Vehicle{
 		int left_rear_id;
 		int right_front_id;
 		int right_rear_id;
+		
+		// Timer to stay in STATE_PLCx
+		int PLC_count;
+		// Timer threshold to switch back to STATE_KL from STATE_PLCx
+		int PLC_count_threshold;
+		// Distance of ego car from lane centre to check end of STATE_LCx
+		double lane_ctr_threshold = 0.001;
 
 		// Methods
 		// Constructors

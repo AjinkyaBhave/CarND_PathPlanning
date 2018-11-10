@@ -272,7 +272,7 @@ int main() {
 			vector<double> next_y_vals;
 			
 			// List of control points that are spaced car.cp_inc apart. 
-			// These will be used as for spline fitting later
+			// These will be used for spline fitting later
 			vector<double> control_points_x;
 			vector<double> control_points_y;
 			

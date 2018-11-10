@@ -28,6 +28,11 @@ Vehicle::Vehicle(){
 	left_rear_id	= -1;
 	right_front_id	= -1;
 	right_rear_id	= -1;
+	
+	// Timer to stay in STATE_PLCx
+	PLC_count	= 0;
+	// Timer threshold to switch back to STATE_KL from STATE_PLCx
+	PLC_count_threshold = 3;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
@@ -42,11 +47,11 @@ Vehicle::~Vehicle(){}
 void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion) {
 	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
 	double cur_min_front_s		= ROAD_LENGTH;
-	double cur_max_rear_s		= 0;
+	double cur_max_rear_s		= -1;
 	double left_min_front_s		= ROAD_LENGTH;
-	double left_max_rear_s	 	= 0;
+	double left_max_rear_s	 	= -1;
 	double right_min_front_s	= ROAD_LENGTH;
-	double right_max_rear_s		= 0;
+	double right_max_rear_s		= -1;
 	
 	// Temporary variables to store Frenet coordinates of surrounding cars
 	double obstacle_d	= 0;
@@ -89,9 +94,10 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 				// Set flag for rear car
 				cur_rear_car = true;
 			}
+			continue;
 		}
 		// Check for front and rear vehicle in left lane
-		else if(lane != LEFT_LANE) {
+		if(lane != LEFT_LANE) {
 			if((obstacle_d > lane_width*(lane-1)) && (obstacle_d < lane_width*lane)){
 				obstacle_s = sensor_fusion[i][5];
 				// Check if this is closest left front car
@@ -108,10 +114,11 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 					// Set flag for rear car
 					left_rear_car = true;
 				}
+				continue;
 			}	
 		}
 		// Check for front and rear vehicle in right lane
-		else if(lane != RIGHT_LANE){ 
+		if(lane != RIGHT_LANE){ 
 			if((obstacle_d > lane_width*(lane+1)) && (obstacle_d < lane_width*(lane+2))){
 				obstacle_s = sensor_fusion[i][5];
 				// Check if this is closest right front car
@@ -128,6 +135,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 					// Set flag for rear car
 					left_rear_car = true;
 				}
+				continue;
 			}
 		}
 	}
@@ -165,8 +173,10 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion)
 {
 	switch(state){
-		case STATE_KL	: state_KL(sensor_fusion); break;
+		case STATE_KL	: state_KL(sensor_fusion)	; break;
 		case STATE_PLCL: state_PLCL(sensor_fusion); break;
+		case STATE_PLCR: state_PLCR(sensor_fusion); break;
+		case STATE_LC	: state_LC()					; break;
 		default			: state = STATE_KL;
 	}
 	
@@ -186,17 +196,19 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 			if(lane != LEFT_LANE){
 				printf("new state: PLCL\n");
 				state = STATE_PLCL; 
+				PLC_count = 0;
 			}
 			else{
 				printf("new state: PLCR\n");
 				state = STATE_PLCR;
+				PLC_count = 0;
 			}
 		}
 		// Gap between front vehicle and ego vehicle is large enough to accelerate
 		else{
-			double vx = sensor_fusion[cur_front_id][3];
-			double vy = sensor_fusion[cur_front_id][4];
-			double front_speed = sqrt(vx*vx + vy*vy);
+			//double vx = sensor_fusion[cur_front_id][3];
+			//double vy = sensor_fusion[cur_front_id][4];
+			//double front_speed = sqrt(vx*vx + vy*vy);
 			if(ref_vel < max_ref_vel){
 				ref_vel += ref_vel_delta;
 			}
@@ -210,6 +222,7 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 	// Allow to change lanes if situation safe
 	bool change_lane = true;
+	// Car in front in left lane
 	if(left_front_car){
 		printf("left front car \n");
 		// Gap between front left vehicle and ego vehicle is too small
@@ -219,22 +232,88 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 			ref_vel -= ref_vel_delta;
 			// Not possible to safely change lanes 
 			change_lane = false;
+			PLC_count = PLC_count + 1;
+			if(PLC_count > PLC_count_threshold){
+				state = STATE_KL;
+				PLC_count = 0;
+			}
+			return;
 		}
 	}
 	if(left_rear_car){
 		printf("left rear car \n");
-		// Gap between front left vehicle and ego vehicle is too small
+		// Gap between rear left vehicle and ego vehicle is too small
 		if((s - sensor_fusion[left_rear_id][5]) < cp_inc){
 			printf("reduce speed\n");
 			// Reduce current speed
 			ref_vel -= ref_vel_delta;
 			// Not possible to safely change lanes 
 			change_lane = false;
+			PLC_count = PLC_count + 1;
+			if(PLC_count > PLC_count_threshold){
+				state = STATE_KL;
+				PLC_count = 0;
+			}
+			return;
 		}
 	}
 	
 	if(change_lane){
-		state = STATE_LCL;
+		state = STATE_LC;
 		lane = lane - 1;
+		PLC_count = 0;
 	}
+}
+
+void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
+	// Allow to change lanes if situation safe
+	bool change_lane = true;
+	// Car in front in right lane
+	if(right_front_car){
+		printf("right front car \n");
+		// Gap between front right vehicle and ego vehicle is too small
+		if((sensor_fusion[right_front_id][5] - s) < cp_inc){
+			printf("reduce speed\n");
+			// Reduce current speed
+			ref_vel -= ref_vel_delta;
+			// Not possible to safely change lanes 
+			change_lane = false;
+			PLC_count = PLC_count + 1;
+			if(PLC_count > PLC_count_threshold){
+				state = STATE_KL;
+				PLC_count = 0;
+			}
+			return;
+		}
+	}
+	if(right_rear_car){
+		printf("right rear car \n");
+		// Gap between rear right vehicle and ego vehicle is too small
+		if((s - sensor_fusion[lright_rear_id][5]) < cp_inc){
+			printf("reduce speed\n");
+			// Reduce current speed
+			ref_vel -= ref_vel_delta;
+			// Not possible to safely change lanes 
+			change_lane = false;
+			PLC_count = PLC_count + 1;
+			if(PLC_count > PLC_count_threshold){
+				state = STATE_KL;
+				PLC_count = 0;
+			}
+			return;
+		}
+	}
+	
+	if(change_lane){
+		state = STATE_LC;
+		lane = lane + 1;
+		PLC_count = 0;
+	}
+}
+
+void Vehicle::state_LC(){
+	double lane_centre = lane_width/2.0 + lane_width*lane;
+	if(abs(d - lane_centre)  < lane_ctr_threshold){
+		state = STATE_KL;
+	}	
 }
