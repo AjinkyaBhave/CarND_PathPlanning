@@ -131,7 +131,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		}
 	}
 	
-	printf("SF size: %d\n", sensor_fusion.size());
+	printf("SF size: %ld\n", sensor_fusion.size());
 	// Gap between obstacle vehicle and ego vehicle is too small
 	if((cur_front_id != -1) &&(sensor_fusion[cur_front_id][5] - s) < cp_inc){
 		// Set flag for front car
