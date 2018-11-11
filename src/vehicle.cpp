@@ -76,9 +76,9 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	left_rear_id	= -1;
 	right_front_id	= -1;
 	right_rear_id	= -1;
-
+	int i =0;
 	// Check for closest surrounding vehicles in all lanes
-	for (int i = 0; i < sensor_fusion.size(); i++){
+	for (i = 0; i < sensor_fusion.size(); i++){
 		obstacle_d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
 		if ((obstacle_d > lane_width*lane) && (obstacle_d < lane_width*(lane+1))){
@@ -131,7 +131,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		}
 	}
 	
-	printf("Finished SF for loop i=%d\n", i);
+	printf("Finished SF for loop size=%d\n", i);
 	printf("IDs: %d %d %d %d %d %d\n", cur_front_id, cur_rear_id, left_front_id, left_rear_id, right_front_id, right_rear_id);
 	// Gap between obstacle vehicle and ego vehicle is too small
 	if((sensor_fusion[cur_front_id][5] - s) < cp_inc){
