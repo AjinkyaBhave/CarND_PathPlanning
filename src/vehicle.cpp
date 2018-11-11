@@ -134,7 +134,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		// Set flag for front car
 		cur_front_car = true;
 	}
-	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < cp_inc){
+	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < 0.5*cp_inc){
 		// Set flag for rear car
 		cur_rear_car = true;
 	}
@@ -142,7 +142,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		// Set flag for front car
 		left_front_car = true;
 	}
-	if((left_rear_id != -1) && (s - sensor_fusion[left_rear_id][5]) < cp_inc){
+	if((left_rear_id != -1) && (s - sensor_fusion[left_rear_id][5]) < 0.5*cp_inc){
 		// Set flag for rear car
 		left_rear_car = true;
 	}
@@ -151,7 +151,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		right_front_car = true;
 	}
 	
-	if( (right_rear_id != -1) && (s - sensor_fusion[right_rear_id][5]) < cp_inc){
+	if( (right_rear_id != -1) && (s - sensor_fusion[right_rear_id][5]) < 0.5*cp_inc){
 		// Set flag for rear car
 		right_rear_car = true;
 	}
