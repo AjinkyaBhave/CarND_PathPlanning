@@ -146,7 +146,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	}
 	if((s - sensor_fusion[left_rear_id][5]) < cp_inc){
 		// Set flag for rear car
-		left_rear_car = true
+		left_rear_car = true;
 	}
 	if((sensor_fusion[right_front_id][5] - s) < cp_inc){
 		// Set flag for front car
