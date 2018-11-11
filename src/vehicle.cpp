@@ -35,8 +35,6 @@ Vehicle::Vehicle(){
 	PLCR_count	= 0;
 	// Timer threshold to switch back to STATE_KL from STATE_PLCx
 	PLC_count_threshold = 3;
-	// Distance of ego car from lane centre to check end of STATE_LCx
-	lane_ctr_threshold = 0.001;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
@@ -187,7 +185,7 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 			printf("STATE KL to PLCL\n");
 			state = STATE_PLCL; 
 		}
-		else if (PLCR_count == 0){
+		else if (lane != RIGHT_LANE && PLCR_count == 0){
 			printf("STATE KL to PLCR\n");
 			state = STATE_PLCR;
 		}
@@ -222,7 +220,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 		PLCL_count = PLCL_count + 1;
 		if(PLCL_count > PLC_count_threshold){
 			state = STATE_KL;
-			printf("STATE PLCR to KL");
+			printf("STATE PLCR to KL\n");
 		}
 		return;
 	}
@@ -236,14 +234,14 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 		PLCL_count = PLCL_count + 1;
 		if(PLCL_count > PLC_count_threshold){
 			state = STATE_KL;
-			printf("STATE PLCL to KL");
+			printf("STATE PLCL to KL\n");
 		}
 		return;
 	}
 	
 	if(change_lane){
 		state = STATE_LC;
-		printf("STATE PLCL to LC");
+		printf("STATE PLCL to LC\n");
 		lane = lane - 1;
 		PLCL_count = 0;
 	}
@@ -263,7 +261,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 		PLCR_count = PLCR_count + 1;
 		if(PLCR_count > PLC_count_threshold){
 			state = STATE_KL;
-			printf("STATE PLCR to KL");
+			printf("STATE PLCR to KL\n");
 		}
 		return;
 	}
@@ -277,14 +275,14 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 		PLCR_count = PLCR_count + 1;
 		if(PLCR_count > PLC_count_threshold){
 			state = STATE_KL;
-			printf("STATE PLCR to KL");
+			printf("STATE PLCR to KL\n");
 		}
 		return;
 	}
 	
 	if(change_lane){
 		state = STATE_LC;
-		printf("STATE PLCR to LC");
+		printf("STATE PLCR to LC\n");
 		lane = lane + 1;
 		PLCR_count = 0;
 	}
@@ -292,8 +290,9 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 
 void Vehicle::state_LC(){
 	double lane_centre = lane_width/2.0 + lane_width*lane;
-	if(abs(d - lane_centre)  < lane_ctr_threshold){
+	printf("d: %d, offset: %d\n", d, lane_offset);
+	if(abs(d - lane_centre)  < lane_offset){
 		state = STATE_KL;
-		printf("STATE LC to KL");
+		printf("STATE LC to KL\n");
 	}	
 }
