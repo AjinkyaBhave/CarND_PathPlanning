@@ -131,7 +131,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		}
 	}
 	
-	printf("Finished SF for loop\n");
+	printf("Finished SF for loop i=%d\n", i);
 	printf("IDs: %d %d %d %d %d %d\n", cur_front_id, cur_rear_id, left_front_id, left_rear_id, right_front_id, right_rear_id);
 	// Gap between obstacle vehicle and ego vehicle is too small
 	if((sensor_fusion[cur_front_id][5] - s) < cp_inc){
