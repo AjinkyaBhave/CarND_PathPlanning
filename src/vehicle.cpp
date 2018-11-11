@@ -290,7 +290,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 
 void Vehicle::state_LC(){
 	double lane_centre = lane_width/2.0 + lane_width*lane;
-	printf("d: %f, offset: %f\n", d, lane_offset);
+	printf("d: %f, centre: %f\n", d, lane_centre);
 	if(abs(d - lane_centre)  < lane_offset){
 		state = STATE_KL;
 		printf("STATE LC to KL\n");
