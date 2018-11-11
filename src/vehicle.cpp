@@ -218,7 +218,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 		ref_vel -= ref_vel_delta;
 		// Not possible to safely change lanes 
 		change_lane = false;
-		PLC_count = PLC_count + 1;
+		PLCL_count = PLCL_count + 1;
 		if(PLCL_count > PLC_count_threshold){
 			state = STATE_KL;
 			printf("STATE PLCR to KL");
@@ -232,8 +232,8 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 		ref_vel -= ref_vel_delta;
 		// Not possible to safely change lanes 
 		change_lane = false;
-		PLC_count = PLC_count + 1;
-		if(PLC_count > PLC_count_threshold){
+		PLCL_count = PLCL_count + 1;
+		if(PLCL_count > PLC_count_threshold){
 			state = STATE_KL;
 			printf("STATE PLCL to KL");
 		}
@@ -244,7 +244,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 		state = STATE_LC;
 		printf("STATE PLCL to LC");
 		lane = lane - 1;
-		PLC_count = 0;
+		PLCL_count = 0;
 	}
 }
 
@@ -259,8 +259,8 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 		ref_vel -= ref_vel_delta;
 		// Not possible to safely change lanes 
 		change_lane = false;
-		PLC_count = PLC_count + 1;
-		if(PLC_count > PLC_count_threshold){
+		PLCR_count = PLCR_count + 1;
+		if(PLCR_count > PLC_count_threshold){
 			state = STATE_KL;
 			printf("STATE PLCR to KL");
 		}
@@ -273,8 +273,8 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 		ref_vel -= ref_vel_delta;
 		// Not possible to safely change lanes 
 		change_lane = false;
-		PLC_count = PLC_count + 1;
-		if(PLC_count > PLC_count_threshold){
+		PLCR_count = PLCR_count + 1;
+		if(PLCR_count > PLC_count_threshold){
 			state = STATE_KL;
 			printf("STATE PLCR to KL");
 		}
@@ -285,7 +285,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 		state = STATE_LC;
 		printf("STATE PLCR to LC");
 		lane = lane + 1;
-		PLC_count = 0;
+		PLCR_count = 0;
 	}
 }
 
