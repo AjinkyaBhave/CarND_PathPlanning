@@ -76,9 +76,9 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	left_rear_id	= -1;
 	right_front_id	= -1;
 	right_rear_id	= -1;
-	int i =0;
+	
 	// Check for closest surrounding vehicles in all lanes
-	for (i = 0; i < sensor_fusion.size(); i++){
+	for (int i = 0; i < sensor_fusion.size(); i++){
 		obstacle_d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
 		if ((obstacle_d > lane_width*lane) && (obstacle_d < lane_width*(lane+1))){
@@ -131,36 +131,35 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		}
 	}
 	
-	printf("Finished SF for loop size=%d\n", i);
-	printf("IDs: %d %d %d %d %d %d\n", cur_front_id, cur_rear_id, left_front_id, left_rear_id, right_front_id, right_rear_id);
+	printf("SF size: %d\n", sensor_fusion.size());
 	// Gap between obstacle vehicle and ego vehicle is too small
-	if((sensor_fusion[cur_front_id][5] - s) < cp_inc){
+	if((cur_front_id != -1) &&(sensor_fusion[cur_front_id][5] - s) < cp_inc){
 		// Set flag for front car
 		cur_front_car = true;
 	}
-	if((s - sensor_fusion[cur_rear_id][5]) < cp_inc){
+	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < cp_inc){
 		// Set flag for rear car
 		cur_rear_car = true;
 	}
-	if((sensor_fusion[left_front_id][5] - s) < cp_inc){
+	if((left_front_id != -1) && (sensor_fusion[left_front_id][5] - s) < cp_inc){
 		// Set flag for front car
 		left_front_car = true;
 	}
-	if((s - sensor_fusion[left_rear_id][5]) < cp_inc){
+	if((left_rear_id != -1) && (s - sensor_fusion[left_rear_id][5]) < cp_inc){
 		// Set flag for rear car
 		left_rear_car = true;
 	}
-	if((sensor_fusion[right_front_id][5] - s) < cp_inc){
+	if((right_front_id != -1) && (sensor_fusion[right_front_id][5] - s) < cp_inc){
 		// Set flag for front car
 		right_front_car = true;
 	}
 	
-	if((s - sensor_fusion[right_rear_id][5]) < cp_inc){
+	if( (right_rear_id != -1) && (s - sensor_fusion[right_rear_id][5]) < cp_inc){
 		// Set flag for rear car
 		right_rear_car = true;
 	}
 	
-	//printf("Traffic- LF: %d, LR: %d, CF: %d, CR: %d, RF: %d  RR: %d\n", left_front_car , left_rear_car, cur_front_car, cur_rear_car, right_front_car, right_rear_car);
+	printf("Traffic- LF: %d, LR: %d, CF: %d, CR: %d, RF: %d  RR: %d\n", left_front_car , left_rear_car, cur_front_car, cur_rear_car, right_front_car, right_rear_car);
 	
 }
 
