@@ -66,8 +66,10 @@ class Vehicle{
 		int right_front_id;
 		int right_rear_id;
 		
-		// Timer to stay in STATE_PLCx
-		int PLC_count;
+		// Timer to stay in STATE_PLCL
+		int PLCL_count;
+		// Timer to stay in STATE_PLCR
+		int PLCR_count;
 		// Timer threshold to switch back to STATE_KL from STATE_PLCx
 		int PLC_count_threshold;
 		// Distance of ego car from lane centre to check end of STATE_LCx
