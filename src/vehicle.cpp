@@ -175,6 +175,7 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 }
 
 void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
+	printf("lane: %d\n", lane);
 	if(cur_front_car){
 		// Gap between front vehicle and ego vehicle is too small
 		printf("front car \n");
