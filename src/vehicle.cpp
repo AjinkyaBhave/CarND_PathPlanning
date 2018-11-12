@@ -57,6 +57,9 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	// Temporary variables to store Frenet coordinates of surrounding cars
 	double obstacle_d	= 0;
 	double obstacle_s	= 0;
+	// Temporary variables to store speeds of surrounding cars
+	double vx = 0;
+	double vy = 0;
 	
 	// Assume no immediate obstacles at start of check
 	cur_front_car		= false;
@@ -132,6 +135,9 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	if((cur_front_id != -1) && (sensor_fusion[cur_front_id][5] - s) < cp_inc){
 		// Set flag for front car
 		cur_front_car = true;
+		vx = sensor_fusion[cur_front_id][3];
+		vy = sensor_fusion[cur_front_id][4];
+		cur_front_speed = sqrt(vx*vx + vy*vy);
 	}
 	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < 0.5*cp_inc){
 		// Set flag for rear car
@@ -177,11 +183,8 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 	if(cur_front_car){
 		// Gap between front vehicle and ego vehicle is too small
 		printf("front car \n");
-		double vx = sensor_fusion[cur_front_id][3];
-		double vy = sensor_fusion[cur_front_id][4];
-		double front_speed = sqrt(vx*vx + vy*vy);
 		// Reduce current speed
-		if(front_speed < speed){
+		if(cur_front_speed < speed){
 			printf("Front Speed: %f, Speed: %f \n", front_speed, speed);
 			ref_vel -= ref_vel_delta;
 		}
@@ -234,8 +237,10 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 	if(left_front_car){
 		// Gap between front left vehicle and ego vehicle is too small
 		printf("left front car \n");
-		// Reduce current speed
-		ref_vel -= ref_vel_delta;
+		if(cur_front_speed < speed){
+			// Reduce current speed
+			ref_vel -= ref_vel_delta;
+		}
 		// Not possible to safely change lanes 
 		change_lane = false;
 		PLCL_count = PLCL_count + 1;
@@ -248,8 +253,10 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 	if(left_rear_car){
 		// Gap between rear left vehicle and ego vehicle is too small
 		printf("left rear car \n");
-		// Reduce current speed
-		ref_vel -= ref_vel_delta;
+		if(cur_front_speed < speed){
+			// Reduce current speed
+			ref_vel -= ref_vel_delta;
+		}
 		// Not possible to safely change lanes 
 		change_lane = false;
 		PLCL_count = PLCL_count + 1;
@@ -275,8 +282,10 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 	if(right_front_car){
 		// Gap between front right vehicle and ego vehicle is too small
 		printf("right front car \n");
-		// Reduce current speed
-		ref_vel -= ref_vel_delta;
+		if(cur_front_speed < speed){
+			// Reduce current speed
+			ref_vel -= ref_vel_delta;
+		}
 		// Not possible to safely change lanes 
 		change_lane = false;
 		PLCR_count = PLCR_count + 1;
@@ -289,8 +298,10 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 	if(right_rear_car){
 		// Gap between rear right vehicle and ego vehicle is too small
 		printf("right rear car \n");
-		// Reduce current speed
-		ref_vel -= ref_vel_delta;
+		if(cur_front_speed < speed){
+			// Reduce current speed
+			ref_vel -= ref_vel_delta;
+		}
 		// Not possible to safely change lanes 
 		change_lane = false;
 		PLCR_count = PLCR_count + 1;

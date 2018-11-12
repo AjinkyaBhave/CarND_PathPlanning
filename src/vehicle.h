@@ -67,6 +67,9 @@ class Vehicle{
 		int right_front_id;
 		int right_rear_id;
 		
+		// Speeds of surrounding vehicles
+		double cur_front_speed;
+		
 		// Timer to stay in STATE_PLCL
 		int PLCL_count;
 		// Timer to stay in STATE_PLCR
