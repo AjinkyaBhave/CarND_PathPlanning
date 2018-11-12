@@ -35,7 +35,7 @@ Vehicle::Vehicle(){
 	KL_count = 0;
 	KL_count_threshold = 100;
 	
-	min_change_speed = 20*MPH_TO_MPS;
+	min_change_speed = 20;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
