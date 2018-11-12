@@ -10,7 +10,7 @@ Vehicle::Vehicle(){
 	ref_vel			= 0.0;
 	max_ref_vel 	= 49.5;
 	ref_vel_delta 	= 0.224; // 5 m/s^2 average acceleration
-	lane_offset 	= 0.1;
+	lane_offset 	= 0.05;
 	Ts 				= 0.02;
 	path_size		= 50;
 	cp_inc			= 30;
@@ -29,12 +29,11 @@ Vehicle::Vehicle(){
 	right_front_id	= -1;
 	right_rear_id	= -1;
 	
-	// Timer to stay in STATE_PLCL
 	PLCL_count	= 0;
-	// Timer to stay in STATE_PLCR
 	PLCR_count	= 0;
-	// Timer threshold to switch back to STATE_KL from STATE_PLCx
 	PLC_count_threshold = 3;
+	KL_count = 0;
+	KL_count_threshold = 100;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
@@ -178,8 +177,14 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 	if(cur_front_car){
 		// Gap between front vehicle and ego vehicle is too small
 		printf("front car \n");
+		double vx = sensor_fusion[cur_front_id][3];
+		double vy = sensor_fusion[cur_front_id][4];
+		double front_speed = sqrt(vx*vx + vy*vy);
 		// Reduce current speed
-		ref_vel -= ref_vel_delta;
+		if(front_speed < speed){
+			print("Front Speed: %f, Speed: %f \n", front_speed, speed);
+			ref_vel -= ref_vel_delta;
+		}
 		// Check current lane to decide whether to change left or right
 		if(lane != LEFT_LANE && PLCL_count == 0){
 			printf("STATE KL to PLCL\n");
@@ -202,6 +207,22 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 		//double front_speed = sqrt(vx*vx + vy*vy);
 		if(ref_vel < max_ref_vel){
 			ref_vel += ref_vel_delta;
+		}
+		if (lane != CENTRE_LANE){
+			KL_count = KL_count + 1;
+		}
+		else{
+			KL_count = 0;
+		}
+		if(KL_count > KL_count_threshold){
+			if(lane != LEFT_LANE){
+				printf("STATE KL to PLCL\n");
+				state = STATE_PLCL; 
+			}
+			else if (lane != RIGHT_LANE){
+				printf("STATE KL to PLCR\n");
+				state = STATE_PLCR;
+			}
 		}
 	}
 }

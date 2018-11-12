@@ -14,6 +14,7 @@
 #define RIGHT_LANE	2
 
 #define ROAD_LENGTH 6950
+#define MPH_TO_MPS  0.447
 
 // Class to store ego vehicle-related state and parameters
 class Vehicle{
@@ -49,7 +50,7 @@ class Vehicle{
 		int path_size;
 		// Distance between successive control points in Frenet coordinates in metres
 		double cp_inc;
-		
+
 		// Indicates if surrounding car of this type is present
 		bool cur_front_car;
 		bool cur_rear_car;
@@ -74,6 +75,10 @@ class Vehicle{
 		int PLC_count_threshold;
 		// Distance of ego car from lane centre to check end of STATE_LCx
 		double lane_ctr_threshold; 
+		// Timer to bias vehicle to stay in centre lane
+		int KL_count;
+		// Timer threshold to bias vehicle to stay in centre lane
+		int KL_count_threshold;
 
 		// Methods
 		// Constructors
