@@ -182,7 +182,7 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 		double front_speed = sqrt(vx*vx + vy*vy);
 		// Reduce current speed
 		if(front_speed < speed){
-			print("Front Speed: %f, Speed: %f \n", front_speed, speed);
+			printf("Front Speed: %f, Speed: %f \n", front_speed, speed);
 			ref_vel -= ref_vel_delta;
 		}
 		// Check current lane to decide whether to change left or right
