@@ -67,8 +67,10 @@ class Vehicle{
 		int right_front_id;
 		int right_rear_id;
 		
-		// Speeds of surrounding vehicles
+		// Speeds of surrounding vehicles [m/s]
 		double cur_front_speed;
+		// Minimum speed above which car should change lanes [m/s]
+		double min_change_speed;
 		
 		// Timer to stay in STATE_PLCL
 		int PLCL_count;

@@ -34,6 +34,8 @@ Vehicle::Vehicle(){
 	PLC_count_threshold = 3;
 	KL_count = 0;
 	KL_count_threshold = 100;
+	
+	min_change_speed = 9;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
@@ -267,7 +269,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 		return;
 	}
 	
-	if(change_lane){
+	if(change_lane && (speed > min_change_speed)){
 		state = STATE_LC;
 		printf("STATE PLCL to LC\n");
 		lane = lane - 1;
@@ -312,7 +314,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 		return;
 	}
 	
-	if(change_lane){
+	if(change_lane && (speed > min_change_speed)){
 		state = STATE_LC;
 		printf("STATE PLCR to LC\n");
 		lane = lane + 1;
