@@ -35,7 +35,7 @@ Vehicle::Vehicle(){
 	KL_count = 0;
 	KL_count_threshold = 100;
 	
-	min_change_speed = 9;
+	min_change_speed = 20*MPH_TO_MPS;
 }
 
 Vehicle::Vehicle(int lane, double max_ref_vel){
@@ -163,6 +163,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		right_rear_car = true;
 	}
 	
+	printf("Speed: %f\n", speed);
 	//printf("Traffic- LF: %d, LR: %d, CF: %d, CR: %d, RF: %d  RR: %d\n", left_front_car , left_rear_car, cur_front_car, cur_rear_car, right_front_car, right_rear_car);
 	
 }
