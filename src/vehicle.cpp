@@ -139,7 +139,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		vy = sensor_fusion[cur_front_id][4];
 		cur_front_speed = sqrt(vx*vx + vy*vy);
 	}
-	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < 0.5*cp_inc){
+	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < 0.2*cp_inc){
 		// Set flag for rear car
 		cur_rear_car = true;
 	}
@@ -147,7 +147,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		// Set flag for front car
 		left_front_car = true;
 	}
-	if((left_rear_id != -1) && (s - sensor_fusion[left_rear_id][5]) < 0.5*cp_inc){
+	if((left_rear_id != -1) && (s - sensor_fusion[left_rear_id][5]) < 0.2*cp_inc){
 		// Set flag for rear car
 		left_rear_car = true;
 	}
@@ -156,7 +156,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		right_front_car = true;
 	}
 	
-	if( (right_rear_id != -1) && (s - sensor_fusion[right_rear_id][5]) < 0.5*cp_inc){
+	if( (right_rear_id != -1) && (s - sensor_fusion[right_rear_id][5]) < 0.2*cp_inc){
 		// Set flag for rear car
 		right_rear_car = true;
 	}
@@ -322,7 +322,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 
 void Vehicle::state_LC(){
 	double lane_centre = lane_width/2.0 + lane_width*lane;
-	printf("d: %f, centre: %f\n", d, lane_centre);
+	//printf("d: %f, centre: %f\n", d, lane_centre);
 	if(abs(d - lane_centre)  < lane_offset){
 		state = STATE_KL;
 		printf("STATE LC to KL\n");
