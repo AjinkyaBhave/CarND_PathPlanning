@@ -213,7 +213,7 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 		if(ref_vel < max_ref_vel){
 			ref_vel += ref_vel_delta;
 		}
-		if (lane != CENTRE_LANE){
+		/*if (lane != CENTRE_LANE){
 			KL_count = KL_count + 1;
 		}
 		else{
@@ -228,7 +228,7 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 				printf("STATE KL to PLCR\n");
 				state = STATE_PLCR;
 			}
-		}
+		}*/
 	}
 }
 
