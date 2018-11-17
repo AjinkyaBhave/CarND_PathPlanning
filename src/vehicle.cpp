@@ -152,7 +152,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		// Project obstacle position
 		obstacle_s = sensor_fusion[cur_front_id][5];
 		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
-		if((obstacle_s - car_future_s) < 1.5*cp_inc){
+		if((obstacle_s - car_future_s) < cp_inc){
 			// Set flag for front car
 			cur_front_car = true;
 		}
@@ -180,7 +180,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		// Project obstacle position
 		obstacle_s = sensor_fusion[left_front_id][5];
 		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
-		if((obstacle_s - car_future_s) < 1.5*cp_inc){
+		if((obstacle_s - car_future_s) < cp_inc){
 			// Set flag for left front car
 			left_front_car = true;
 		}
@@ -208,7 +208,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		// Project obstacle position
 		obstacle_s = sensor_fusion[right_front_id][5];
 		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
-		if((obstacle_s - car_future_s) < 1.5*cp_inc){
+		if((obstacle_s - car_future_s) < cp_inc){
 			// Set flag for right front car
 			right_front_car = true;
 		}
