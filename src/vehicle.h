@@ -98,7 +98,7 @@ class Vehicle{
 		void state_PLCL(std::vector< std::vector<double> > sensor_fusion);
 		void state_PLCR(std::vector< std::vector<double> > sensor_fusion);
 		void state_LC();
-		void Vehicle::generate_trajectory(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s);
+		void generate_trajectory(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s);
 	
 };
 #endif
