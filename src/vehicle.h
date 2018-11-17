@@ -67,7 +67,7 @@ class Vehicle{
 		int right_front_id;
 		int right_rear_id;
 		
-		// Speeds of surrounding vehicles [mph]
+		// Speed of obstacle front vehicle [mph]
 		double cur_front_speed;
 		// Minimum speed above which car should change lanes [mph]
 		double min_change_speed;
