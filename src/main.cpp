@@ -8,7 +8,6 @@
 #include "Eigen-3.3/Eigen/Core"
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
-#include "spline.h"
 #include "vehicle.h"
 
 using namespace std;
@@ -240,143 +239,19 @@ int main() {
 			// Sensor Fusion Data, a list of all other cars on the same side of the road.
 			auto sensor_fusion = j[1]["sensor_fusion"];
 
-			json msgJson;
-			
-			// Get environment around ego vehicle
-			car.get_surrounding_vehicles(sensor_fusion);
-			/*double cur_min_front_s = ROAD_LENGTH;
-			double obstacle_s = 0;
-			double obstacle_d = 0;
-			car.cur_front_car = false;			
-			for (int i = 0; i< sensor_fusion.size(); i++){
-				obstacle_d = sensor_fusion[i][6];
-				// Check for front and rear vehicle in same lane
-				if ((obstacle_d > car.lane_width*car.lane) && (obstacle_d < car.lane_width*(car.lane+1))){
-					printf("Front car d: %f\n", obstacle_d);
-					obstacle_s = sensor_fusion[i][5];
-					// Check if this is closest front car
-					if((obstacle_s > car.s) && (obstacle_s < cur_min_front_s)){
-						cur_min_front_s = obstacle_s;
-						car.cur_front_id    = i;
-						// Set flag for front car
-						car.cur_front_car = true;
-						printf("ID: %d, obs s: %f, s: %f, obs_d: %f, d: %f\n", car.cur_front_id, obstacle_s, car.s, obstacle_d, car.d);
-					}
-				}
-			}*/
-			// Decide next state and new ref_vel for ego vehicle
-			car.choose_next_state(sensor_fusion);
-			
 			// List of actual (x,y) waypoints used for trajectory generation
 			vector<double> next_x_vals;
 			vector<double> next_y_vals;
 			
-			// List of control points that are spaced car.cp_inc apart. 
-			// These will be used for spline fitting later
-			vector<double> control_points_x;
-			vector<double> control_points_y;
+			// Get environment around ego vehicle
+			car.get_surrounding_vehicles(sensor_fusion);
+			// Decide next state, new lane, and new ref_vel for ego vehicle
+			car.choose_next_state(sensor_fusion);
+			// Generate reference trajectory for ego vehicle to follow
+			car.generate_trajectory(next_x_vals, next_y_vals, previous_path_x, previous_path_y, end_path_s);
 			
-			// Conversion from mph to m/s
-			double mph_to_mps = 0.447;
-			// Length of previous path in number of points
-			int prev_path_size = previous_path_x.size();
-			// Reference starting point for interpolation. 
-			// Could be either ego vehicle state or end point of previous path.
-			double ref_x; 
-			double ref_y; 
-			double ref_yaw; 
-			double prev_ref_x;
-			double prev_ref_y;
-			
-			//if(prev_path_size > 0){
-				//car.s = end_path_s;
-			//}
-			// If previous path is too small
-			if(prev_path_size < 2){
-				// Make path locally tangent to car heading
-				ref_x = car.x;
-				ref_y = car.y;
-				ref_yaw = deg2rad(car.yaw);
-				prev_ref_x = car.x - cos(car.yaw);
-				prev_ref_y = car.y - sin(car.yaw);
-				//printf("\n using car ref\n");
-			}
-			// Use previous path's endpoint as reference
-			else{
-				ref_x = previous_path_x[prev_path_size-1];
-				ref_y = previous_path_y[prev_path_size-1];
-				prev_ref_x = previous_path_x[prev_path_size-2];
-				prev_ref_y = previous_path_y[prev_path_size-2];
-				ref_yaw = atan2(ref_y-prev_ref_y, ref_x-prev_ref_x);
-				car.s = end_path_s;
-				//printf("\n using prev_path\n");
-			}
-			control_points_x.push_back(prev_ref_x);
-			control_points_x.push_back(ref_x);
-			control_points_y.push_back(prev_ref_y);
-			control_points_y.push_back(ref_y);
-			
-			// Add evenly spaced points car.cp_inc apart in Frenet coordinates ahead of starting reference 
-			vector<double> next_cp0 = getXY(car.s+car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp1 = getXY(car.s+2*car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			vector<double> next_cp2 = getXY(car.s+3*car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-			
-			control_points_x.push_back(next_cp0[0]);
-			control_points_x.push_back(next_cp1[0]);
-			control_points_x.push_back(next_cp2[0]);
-			
-			control_points_y.push_back(next_cp0[1]);
-			control_points_y.push_back(next_cp1[1]);
-			control_points_y.push_back(next_cp2[1]);
-			
-			// Make vehicle frame as local reference frame for control points
-			for (int i = 0; i < control_points_x.size(); i++){
-				double shift_x = control_points_x[i] - ref_x;
-				double shift_y = control_points_y[i] - ref_y;
-				control_points_x[i] = shift_x*cos(-ref_yaw) - shift_y*sin(-ref_yaw);
-				control_points_y[i] = shift_x*sin(-ref_yaw) + shift_y*cos(-ref_yaw);
-				//printf("%f, ", control_points_x[i]);
-			}
-			
-			// Create a spline from the control points defined
-			tk::spline control_spline;
-			control_spline.set_points(control_points_x, control_points_y);
-			
-			// Define a path made up of (x,y) points that the car will visit sequentially every .02 seconds
-			// First add unprocessed previous path points from last time step
-			for(int i = 0; i < prev_path_size; i++)
-			{
-				next_x_vals.push_back(previous_path_x[i]);
-				next_y_vals.push_back(previous_path_y[i]);
-			}
-			
-			// 
-			double target_x = car.cp_inc;
-			double target_y = control_spline(target_x);
-			double target_dist = sqrt(target_x*target_x + target_y*target_y);
-			double N = target_dist/(car.Ts*car.ref_vel*mph_to_mps);
-			double x_inc = target_x/N;
-			double x_offset = 0;
-			
-			// Complete trajectory generation with spline points
-			for(int i=0; i < car.path_size - prev_path_size; i++ ){
-				
-				double x_spline = x_offset + x_inc;
-				double y_spline = control_spline(x_spline);
-				x_offset = x_spline;
-				
-				// Transform back to global frame from vehicle frame
-				double x_global = x_spline*cos(ref_yaw) - y_spline*sin(ref_yaw);
-				double y_global = x_spline*sin(ref_yaw) + y_spline*cos(ref_yaw);
-				x_global += ref_x;
-				y_global += ref_y;
-				
-				// Add waypoint to path lists
-				next_x_vals.push_back(x_global);
-				next_y_vals.push_back(y_global);
-				
-			}
-			// Calculate
+			// Send reference trajectory to simulator to execute
+			json msgJson;
 			msgJson["next_x"] = next_x_vals;
 			msgJson["next_y"] = next_y_vals;
 

@@ -1,6 +1,7 @@
 #ifndef VEHICLE_H
 
 #include <vector>
+#include "spline.h"
 
 #define STATE_KL		0
 #define STATE_PLCL	1
@@ -97,8 +98,7 @@ class Vehicle{
 		void state_PLCL(std::vector< std::vector<double> > sensor_fusion);
 		void state_PLCR(std::vector< std::vector<double> > sensor_fusion);
 		void state_LC();
-		
-		//std::vector<int> successor_states(std::vector< std::vector<double> > sensor_fusion);
+		void Vehicle::generate_trajectory(vector<double>& next_x_vals, vector<double>& next_y_vals, auto previous_path_x, auto previous_path_y, double end_path_s);
 	
 };
 #endif
