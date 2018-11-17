@@ -180,8 +180,8 @@ void Trajectory_Generator::generate_trajectory (Vehicle car, vector<double>& nex
 		ref_x = car.x;
 		ref_y = car.y;
 		ref_yaw = deg2rad(car.yaw);
-		prev_ref_x = x - cos(car.yaw);
-		prev_ref_y = y - sin(car.yaw);
+		prev_ref_x = car.x - cos(car.yaw);
+		prev_ref_y = car.y - sin(car.yaw);
 		ref_s = car.s;
 		//printf("\n using car ref\n");
 	}
@@ -242,7 +242,7 @@ void Trajectory_Generator::generate_trajectory (Vehicle car, vector<double>& nex
 	double x_offset = 0;
 	
 	// Complete trajectory generation with spline points
-	for(int i=0; i < path_size - prev_path_size; i++ ){
+	for(int i=0; i < car.path_size - prev_path_size; i++ ){
 		double x_spline = x_offset + x_inc;
 		double y_spline = control_spline(x_spline);
 		x_offset = x_spline;
