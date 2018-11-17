@@ -334,7 +334,7 @@ void Vehicle::state_LC(){
 	}	
 }
 
-void Vehicle::generate_trajectory(vector<double>& next_x_vals, vector<double>& next_y_vals, auto previous_path_x, auto previous_path_y, double end_path_s){
+void Vehicle::generate_trajectory(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s){
 	// List of control points that are spaced car.cp_inc apart. 
 	// These will be used for spline fitting later
 	vector<double> control_points_x;
