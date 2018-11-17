@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Class Trajectory_Generator{
+class Trajectory_Generator{
 	
 	public:
 	// Members
