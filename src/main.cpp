@@ -9,6 +9,7 @@
 #include "Eigen-3.3/Eigen/QR"
 #include "json.hpp"
 #include "vehicle.h"
+#include "trajectory_generator.h"
 
 using namespace std;
 
