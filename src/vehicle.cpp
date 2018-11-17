@@ -47,7 +47,7 @@ Vehicle::Vehicle(int lane, double max_ref_vel){
 
 Vehicle::~Vehicle(){}
 
-void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion) {
+void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion, int prev_path_size, double end_path_s) {
 	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
 	double cur_min_front_s		= ROAD_LENGTH;
 	double cur_max_rear_s		= -1;
@@ -60,8 +60,11 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	double obstacle_d	= 0;
 	double obstacle_s	= 0;
 	// Temporary variables to store speeds of surrounding cars
-	double vx = 0;
-	double vy = 0;
+	double obstacle_vx 		= 0;
+	double obstacle_vy 		= 0;
+	double obstacle_speed 	= 0;
+	// Saves future Frenet path position of car
+	double car_future_s;
 	
 	// Assume no immediate obstacles at start of check
 	cur_front_car		= false;
@@ -79,19 +82,26 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	right_front_id	= -1;
 	right_rear_id	= -1;
 	
+	// If previous path points exist, project car path position at end of previous path
+	if(prev_path_size > 0){
+		car_future_s = end_path_s;
+	}
+	// Otherwise car future path position is current car.s
+	else{
+		car_future_s = s;
+	}
 	// Check for closest surrounding vehicles in all lanes
 	for (int i = 0; i < sensor_fusion.size(); i++){
 		obstacle_d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
 		if ((obstacle_d > lane_width*lane) && (obstacle_d < lane_width*(lane+1))){
-			obstacle_s = sensor_fusion[i][5];
 			// Check if this is closest front car
 			if((obstacle_s > s) && (obstacle_s < cur_min_front_s)){
 				cur_min_front_s = obstacle_s;
 				cur_front_id    = i;
 			}
 			// Check if this is closest rear car
-			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s)){
+			else if((obstacle_s < s) && (obstacle_s > cur_max_rear_s )){
 				cur_max_rear_s = obstacle_s;
 				cur_rear_id 	= i;
 			}
@@ -134,33 +144,88 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	}
 	
 	// Gap between obstacle vehicles and ego vehicle is too small
-	if((cur_front_id != -1) && (sensor_fusion[cur_front_id][5] - s) < 1.5*cp_inc){
-		// Set flag for front car
-		cur_front_car = true;
-		vx = sensor_fusion[cur_front_id][3];
-		vy = sensor_fusion[cur_front_id][4];
-		cur_front_speed = sqrt(vx*vx + vy*vy);
-	}
-	if((cur_rear_id != -1) && (s - sensor_fusion[cur_rear_id][5]) < 0.2*cp_inc){
-		// Set flag for rear car
-		cur_rear_car = true;
-	}
-	if((left_front_id != -1) && (sensor_fusion[left_front_id][5] - s) < 1.5*cp_inc){
-		// Set flag for front car
-		left_front_car = true;
-	}
-	if((left_rear_id != -1) && (s - sensor_fusion[left_rear_id][5]) < 0.2*cp_inc){
-		// Set flag for rear car
-		left_rear_car = true;
-	}
-	if((right_front_id != -1) && (sensor_fusion[right_front_id][5] - s) < 1.5*cp_inc){
-		// Set flag for front car
-		right_front_car = true;
+	if(cur_front_id != -1){
+		// Get obstacle speed
+		obstacle_vx = sensor_fusion[cur_front_id][3];
+		obstacle_vy = sensor_fusion[cur_front_id][4];
+		obstacle_speed = sqrt(obstacle_vx*obstacle_vx + obstacle_vy*obstacle_vy);
+		// Project obstacle position
+		obstacle_s = sensor_fusion[cur_front_id][5];
+		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		if((obstacle_s - car_future_s) < 1.5*cp_inc){
+			// Set flag for front car
+			cur_front_car = true;
+		}
 	}
 	
-	if( (right_rear_id != -1) && (s - sensor_fusion[right_rear_id][5]) < 0.2*cp_inc){
-		// Set flag for rear car
-		right_rear_car = true;
+	if(cur_rear_id != -1){
+		// Get obstacle speed
+		obstacle_vx = sensor_fusion[cur_rear_id][3];
+		obstacle_vy = sensor_fusion[cur_rear_id][4];
+		obstacle_speed = sqrt(obstacle_vx*obstacle_vx + obstacle_vy*obstacle_vy);
+		// Project obstacle position
+		obstacle_s = sensor_fusion[cur_rear_id][5];
+		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		if((car_future_s - obstacle_s) < 0.2*cp_inc){
+			// Set flag for rear car
+			cur_rear_car = true;
+		}
+	}
+	
+	if(left_front_id != -1){
+		// Get obstacle speed
+		obstacle_vx = sensor_fusion[left_front_id][3];
+		obstacle_vy = sensor_fusion[left_front_id][4];
+		obstacle_speed = sqrt(obstacle_vx*obstacle_vx + obstacle_vy*obstacle_vy);
+		// Project obstacle position
+		obstacle_s = sensor_fusion[left_front_id][5];
+		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		if((obstacle_s - car_future_s) < 1.5*cp_inc){
+			// Set flag for left front car
+			left_front_car = true;
+		}
+	}
+	
+	if(left_rear_id != -1){
+		// Get obstacle speed
+		obstacle_vx = sensor_fusion[left_rear_id][3];
+		obstacle_vy = sensor_fusion[left_rear_id][4];
+		obstacle_speed = sqrt(obstacle_vx*obstacle_vx + obstacle_vy*obstacle_vy);
+		// Project obstacle position
+		obstacle_s = sensor_fusion[left_rear_id][5];
+		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		if((car_future_s - obstacle_s) < 0.2*cp_inc){
+			// Set flag for left rear car
+			left_rear_car = true;
+		}
+	}
+	
+	if(right_front_id != -1){
+		// Get obstacle speed
+		obstacle_vx = sensor_fusion[right_front_id][3];
+		obstacle_vy = sensor_fusion[right_front_id][4];
+		obstacle_speed = sqrt(obstacle_vx*obstacle_vx + obstacle_vy*obstacle_vy);
+		// Project obstacle position
+		obstacle_s = sensor_fusion[right_front_id][5];
+		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		if((obstacle_s - car_future_s) < 1.5*cp_inc){
+			// Set flag for right front car
+			right_front_car = true;
+		}
+	}
+	
+	if(right_rear_id != -1){
+		// Get obstacle speed
+		obstacle_vx = sensor_fusion[right_rear_id][3];
+		obstacle_vy = sensor_fusion[right_rear_id][4];
+		obstacle_speed = sqrt(obstacle_vx*obstacle_vx + obstacle_vy*obstacle_vy);
+		// Project obstacle position
+		obstacle_s = sensor_fusion[right_rear_id][5];
+		obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
+		if((car_future_s - obstacle_s) < 0.2*cp_inc){
+			// Set flag for rear car
+			right_rear_car = true;
+		}
 	}
 	
 	printf("Traffic- LF: %d, LR: %d, CF: %d, CR: %d, RF: %d  RR: %d\n", left_front_car , left_rear_car, cur_front_car, cur_rear_car, right_front_car, right_rear_car);
@@ -207,9 +272,6 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 	}	
 	// Gap between front vehicle and ego vehicle is large enough to accelerate
 	else{
-		//double vx = sensor_fusion[cur_front_id][3];
-		//double vy = sensor_fusion[cur_front_id][4];
-		//double front_speed = sqrt(vx*vx + vy*vy);
 		if(ref_vel < max_ref_vel){
 			ref_vel += ref_vel_delta;
 		}

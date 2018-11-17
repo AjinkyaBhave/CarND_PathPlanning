@@ -78,7 +78,7 @@ int main() {
 			vector<double> next_y_vals;
 			
 			// Get environment around ego vehicle
-			car.get_surrounding_vehicles(sensor_fusion);
+			car.get_surrounding_vehicles(sensor_fusion, previous_path_x.size(), end_path_s);
 			// Decide next state, new lane, and new ref_vel for ego vehicle
 			car.choose_next_state(sensor_fusion);
 			// Generate reference trajectory for ego vehicle to follow
