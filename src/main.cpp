@@ -82,7 +82,7 @@ int main() {
 			// Decide next state, new lane, and new ref_vel for ego vehicle
 			car.choose_next_state(sensor_fusion);
 			// Generate reference trajectory for ego vehicle to follow
-			tg.generate_trajectory(next_x_vals, next_y_vals, previous_path_x, previous_path_y, end_path_s);
+			tg.generate_trajectory(car, next_x_vals, next_y_vals, previous_path_x, previous_path_y, end_path_s);
 			
 			// Send reference trajectory to simulator to execute
 			json msgJson;
