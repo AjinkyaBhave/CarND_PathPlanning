@@ -1,4 +1,5 @@
 #ifndef VEHICLE_H
+#define VEHICLE_H
 
 #include <vector>
 #include "spline.h"
@@ -14,8 +15,7 @@
 #define CENTRE_LANE	1
 #define RIGHT_LANE	2
 
-#define ROAD_LENGTH 6950
-#define MPH_TO_MPS  0.447
+#define ROAD_LENGTH 6945.554
 
 // Class to store ego vehicle-related state and parameters
 class Vehicle{
@@ -98,7 +98,6 @@ class Vehicle{
 		void state_PLCL(std::vector< std::vector<double> > sensor_fusion);
 		void state_PLCR(std::vector< std::vector<double> > sensor_fusion);
 		void state_LC();
-		void generate_trajectory(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s);
 	
 };
 #endif
