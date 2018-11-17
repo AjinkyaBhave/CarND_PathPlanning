@@ -5,6 +5,8 @@
 #include <fstream>
 #include <math.h>
 #include <iostream>
+#include "spline.h"
+#include "json.hpp"
 
 using namespace std;
 
@@ -39,6 +41,7 @@ class Trajectory_Generator{
 	int ClosestWaypoint(double x, double y, const vector<double> &maps_x, const vector<double> &maps_y);
 	int NextWaypoint(double x, double y, double theta, const vector<double> &maps_x, const vector<double> &maps_y);
 	vector<double> getFrenet(double x, double y, double theta, const vector<double> &maps_x, const vector<double> &maps_y);
-	void generate_trajectory(vector<double>& next_x_vals, vector<double>& next_y_vals, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s);
+	vector<double> getXY(double s, double d, const vector<double> &maps_s, const vector<double> &maps_x, const vector<double> &maps_y);
+	void generate_trajectory(Vehicle car, vector<double>& next_x_vals, vector<double>& next_y_vals, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s);
 };
 #endif

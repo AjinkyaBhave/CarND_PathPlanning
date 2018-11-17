@@ -2,7 +2,6 @@
 #define VEHICLE_H
 
 #include <vector>
-#include "spline.h"
 
 #define STATE_KL		0
 #define STATE_PLCL	1
@@ -97,7 +96,6 @@ class Vehicle{
 		void state_KL(std::vector< std::vector<double> > sensor_fusion);
 		void state_PLCL(std::vector< std::vector<double> > sensor_fusion);
 		void state_PLCR(std::vector< std::vector<double> > sensor_fusion);
-		void state_LC();
-	
+		void state_LC();	
 };
 #endif

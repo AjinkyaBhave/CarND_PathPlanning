@@ -6,7 +6,7 @@ Trajectory_Generator::Trajectory_Generator(){
 	
 	// Waypoint map to read from
 	string map_file_ = "../data/highway_map.csv";
-	ifstream in_map_(map_file.c_str(), ifstream::in);
+	ifstream in_map_(map_file_.c_str(), ifstream::in);
 	string line;
 	// Read map file into waypoints vectors
 	while (getline(in_map_, line)) {
@@ -157,7 +157,7 @@ vector<double> Trajectory_Generator::getXY(double s, double d, const vector<doub
 	return {x,y};
 }
 
-void Trajectory_Generator::generate_trajectory (vector<double>& next_x_vals, vector<double>& next_y_vals, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s){
+void Trajectory_Generator::generate_trajectory (Vehicle car, vector<double>& next_x_vals, vector<double>& next_y_vals, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s){
 	// List of control points that are spaced car.cp_inc apart. 
 	// These will be used for spline fitting later
 	vector<double> control_points_x;
@@ -177,12 +177,12 @@ void Trajectory_Generator::generate_trajectory (vector<double>& next_x_vals, vec
 	// If previous path is too small
 	if(prev_path_size < 2){
 		// Make path locally tangent to car heading
-		ref_x = x;
-		ref_y = y;
-		ref_yaw = deg2rad(yaw);
-		prev_ref_x = x - cos(yaw);
-		prev_ref_y = y - sin(yaw);
-		ref_s = s;
+		ref_x = car.x;
+		ref_y = car.y;
+		ref_yaw = deg2rad(car.yaw);
+		prev_ref_x = x - cos(car.yaw);
+		prev_ref_y = y - sin(car.yaw);
+		ref_s = car.s;
 		//printf("\n using car ref\n");
 	}
 	// Use previous path's endpoint as reference
@@ -201,9 +201,9 @@ void Trajectory_Generator::generate_trajectory (vector<double>& next_x_vals, vec
 	control_points_y.push_back(ref_y);
 	
 	// Add evenly spaced points car.cp_inc apart in Frenet coordinates ahead of starting reference 
-	vector<double> next_cp0 = getXY(ref_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-	vector<double> next_cp1 = getXY(ref_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-	vector<double> next_cp2 = getXY(ref_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	vector<double> next_cp0 = getXY(ref_s+car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	vector<double> next_cp1 = getXY(ref_s+2*car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	vector<double> next_cp2 = getXY(ref_s+3*car.cp_inc, 2+4*car.lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 	
 	control_points_x.push_back(next_cp0[0]);
 	control_points_x.push_back(next_cp1[0]);
@@ -234,10 +234,10 @@ void Trajectory_Generator::generate_trajectory (vector<double>& next_x_vals, vec
 		next_y_vals.push_back(previous_path_y[i]);
 	}
 	
-	double target_x = cp_inc;
+	double target_x = car.cp_inc;
 	double target_y = control_spline(target_x);
 	double target_dist = sqrt(target_x*target_x + target_y*target_y);
-	double N = target_dist/(Ts*ref_vel*mph_to_mps);
+	double N = target_dist/(car.Ts*car.ref_vel*mph_to_mps);
 	double x_inc = target_x/N;
 	double x_offset = 0;
 	
