@@ -339,8 +339,8 @@ void Vehicle::generate_trajectory
 {
 	// List of control points that are spaced car.cp_inc apart. 
 	// These will be used for spline fitting later
-	vector<double> control_points_x;
-	vector<double> control_points_y;
+	std::vectorvector<double> control_points_x;
+	std::vectorvector<double> control_points_y;
 	
 	// Conversion from mph to m/s
 	//double mph_to_mps = 0.447;
@@ -382,9 +382,9 @@ void Vehicle::generate_trajectory
 	control_points_y.push_back(ref_y);
 	
 	// Add evenly spaced points car.cp_inc apart in Frenet coordinates ahead of starting reference 
-	vector<double> next_cp0 = getXY(ref_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-	vector<double> next_cp1 = getXY(ref_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-	vector<double> next_cp2 = getXY(ref_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	std::vectorvector<double> next_cp0 = getXY(ref_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	std::vectorvector<double> next_cp1 = getXY(ref_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	std::vectorvector<double> next_cp2 = getXY(ref_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 	
 	control_points_x.push_back(next_cp0[0]);
 	control_points_x.push_back(next_cp1[0]);
