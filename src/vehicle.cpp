@@ -95,6 +95,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 		obstacle_d = sensor_fusion[i][6];
 		// Check for front and rear vehicle in same lane
 		if ((obstacle_d > lane_width*lane) && (obstacle_d < lane_width*(lane+1))){
+			obstacle_s = sensor_fusion[i][5];
 			// Check if this is closest front car
 			if((obstacle_s > s) && (obstacle_s < cur_min_front_s)){
 				cur_min_front_s = obstacle_s;
@@ -129,12 +130,12 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 			if((obstacle_d > lane_width*(lane+1)) && (obstacle_d < lane_width*(lane+2))){
 				obstacle_s = sensor_fusion[i][5];
 				// Check if this is closest right front car
-				if((obstacle_s > this->s) && (obstacle_s < right_min_front_s)){
+				if((obstacle_s > s) && (obstacle_s < right_min_front_s)){
 					right_min_front_s = obstacle_s;
 					right_front_id    = i;
 				}
 				// Check if this is closest right rear car
-				else if((obstacle_s < this->s) && (obstacle_s > right_max_rear_s)){
+				else if((obstacle_s < s) && (obstacle_s > right_max_rear_s)){
 					right_max_rear_s = obstacle_s;
 					right_rear_id 	= i;
 				}
