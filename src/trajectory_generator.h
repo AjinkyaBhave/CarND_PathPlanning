@@ -5,6 +5,7 @@
 #include <fstream>
 #include <math.h>
 #include <iostream>
+#include "vehicle.h"
 #include "spline.h"
 #include "json.hpp"
 
