@@ -2,11 +2,13 @@
 
 Trajectory_Generator::Trajectory_Generator(){
 	mph_to_mps = 0.447;
-	// Read map file into waypoints vectors
-	map_file_ = "../data/highway_map.csv";
 	max_s = 6945.554;
-	ifstream in_map_(map_file_.c_str(), ifstream::in);
+	
+	// Waypoint map to read from
+	string map_file_ = "../data/highway_map.csv";
+	ifstream in_map_(map_file.c_str(), ifstream::in);
 	string line;
+	// Read map file into waypoints vectors
 	while (getline(in_map_, line)) {
 		istringstream iss(line);
 		double x;
@@ -155,13 +157,11 @@ vector<double> Trajectory_Generator::getXY(double s, double d, const vector<doub
 	return {x,y};
 }
 
-void Trajectory_Generator::generate_trajectory
-(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s)
-{
+void Trajectory_Generator::generate_trajectory (vector<double>& next_x_vals, vector<double>& next_y_vals, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s){
 	// List of control points that are spaced car.cp_inc apart. 
 	// These will be used for spline fitting later
-	std::vector<double> control_points_x;
-	std::vector<double> control_points_y;
+	vector<double> control_points_x;
+	vector<double> control_points_y;
 	
 	// Length of previous path in number of points
 	int prev_path_size = previous_path_x.size();
@@ -201,9 +201,9 @@ void Trajectory_Generator::generate_trajectory
 	control_points_y.push_back(ref_y);
 	
 	// Add evenly spaced points car.cp_inc apart in Frenet coordinates ahead of starting reference 
-	std::vector<double> next_cp0 = getXY(ref_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-	std::vector<double> next_cp1 = getXY(ref_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
-	std::vector<double> next_cp2 = getXY(ref_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	vector<double> next_cp0 = getXY(ref_s+cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	vector<double> next_cp1 = getXY(ref_s+2*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
+	vector<double> next_cp2 = getXY(ref_s+3*cp_inc, 2+4*lane, map_waypoints_s, map_waypoints_x, map_waypoints_y);
 	
 	control_points_x.push_back(next_cp0[0]);
 	control_points_x.push_back(next_cp1[0]);

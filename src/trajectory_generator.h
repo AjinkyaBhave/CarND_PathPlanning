@@ -18,9 +18,7 @@ class Trajectory_Generator{
 	vector<double> map_waypoints_s;
 	vector<double> map_waypoints_dx;
 	vector<double> map_waypoints_dy;
-	
-	// Waypoint map to read from
-	string map_file;
+
 	// The max s value before wrapping around the track back to 0
 	double max_s;
 	// Conversion from mph to m/s
