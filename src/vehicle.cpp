@@ -334,7 +334,9 @@ void Vehicle::state_LC(){
 	}	
 }
 
-void Vehicle::generate_trajectory(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s){
+void Vehicle::generate_trajectory
+(std::vector<double>& next_x_vals, std::vector<double>& next_y_vals, std::vector<double> previous_path_x, std::vector<double> previous_path_y, double end_path_s)
+{
 	// List of control points that are spaced car.cp_inc apart. 
 	// These will be used for spline fitting later
 	vector<double> control_points_x;
@@ -413,17 +415,15 @@ void Vehicle::generate_trajectory(std::vector<double>& next_x_vals, std::vector<
 		next_y_vals.push_back(previous_path_y[i]);
 	}
 	
-	// 
 	double target_x = cp_inc;
 	double target_y = control_spline(target_x);
 	double target_dist = sqrt(target_x*target_x + target_y*target_y);
-	double N = target_dist/(car.Ts*car.ref_vel*MPH_TO_MPS);
+	double N = target_dist/(Ts*ref_vel*MPH_TO_MPS);
 	double x_inc = target_x/N;
 	double x_offset = 0;
 	
 	// Complete trajectory generation with spline points
 	for(int i=0; i < path_size - prev_path_size; i++ ){
-		
 		double x_spline = x_offset + x_inc;
 		double y_spline = control_spline(x_spline);
 		x_offset = x_spline;
@@ -436,8 +436,7 @@ void Vehicle::generate_trajectory(std::vector<double>& next_x_vals, std::vector<
 		
 		// Add waypoint to path lists
 		next_x_vals.push_back(x_global);
-		next_y_vals.push_back(y_global);
-		
+		next_y_vals.push_back(y_global);		
 	}
 	
 }
