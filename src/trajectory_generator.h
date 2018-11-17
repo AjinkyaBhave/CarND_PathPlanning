@@ -6,8 +6,6 @@
 #include <math.h>
 #include <iostream>
 
-#define MPH_TO_MPS  0.447
-
 using namespace std;
 
 Class Trajectory_Generator{
@@ -44,6 +42,5 @@ Class Trajectory_Generator{
 	int NextWaypoint(double x, double y, double theta, const vector<double> &maps_x, const vector<double> &maps_y);
 	vector<double> getFrenet(double x, double y, double theta, const vector<double> &maps_x, const vector<double> &maps_y);
 	void generate_trajectory(vector<double>& next_x_vals, vector<double>& next_y_vals, vector<double> previous_path_x, vector<double> previous_path_y, double end_path_s);
-	
-	
-}
+};
+#endif

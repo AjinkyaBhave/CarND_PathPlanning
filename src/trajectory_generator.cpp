@@ -1,8 +1,7 @@
 #include "trajectory_generator.h"
 
 Trajectory_Generator::Trajectory_Generator(){
-	double mph_to_mps = 0.447;
-	
+	mph_to_mps = 0.447;
 	// Read map file into waypoints vectors
 	map_file_ = "../data/highway_map.csv";
 	max_s = 6945.554;
@@ -238,7 +237,7 @@ void Trajectory_Generator::generate_trajectory
 	double target_x = cp_inc;
 	double target_y = control_spline(target_x);
 	double target_dist = sqrt(target_x*target_x + target_y*target_y);
-	double N = target_dist/(Ts*ref_vel*MPH_TO_MPS);
+	double N = target_dist/(Ts*ref_vel*mph_to_mps);
 	double x_inc = target_x/N;
 	double x_offset = 0;
 	
