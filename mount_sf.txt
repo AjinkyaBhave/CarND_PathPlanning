@@ -2,5 +2,5 @@ sudo mkdir /mnt/Term3
 sudo mount -t vboxsf Term3 /mnt/Term3
 docker run -it -p 4567:4567 -v 'pwd':/work udacity/controls_kit:latest
 cd7a2fba02fc
-
 make > error.txt 2>&1
+

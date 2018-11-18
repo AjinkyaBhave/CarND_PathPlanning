@@ -1,8 +1,7 @@
 #include "trajectory_generator.h"
 
 Trajectory_Generator::Trajectory_Generator(){
-	mph_to_mps = 0.447;
-	max_s = 6945.554;
+		max_s = 6945.554;
 	
 	// Waypoint map to read from
 	string map_file_ = "../data/highway_map.csv";
