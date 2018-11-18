@@ -1,6 +1,8 @@
 #ifndef VEHICLE_H
 #define VEHICLE_H
 
+#include <math.h>
+#include <iostream>
 #include <vector>
 
 #define STATE_KL		0

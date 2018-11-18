@@ -1,6 +1,4 @@
 #include "vehicle.h"
-#include <math.h>
-#include <iostream>
 
 Vehicle::Vehicle(){
 	// Start vehicle in KL state in the centre lane with zero speed
@@ -237,9 +235,9 @@ void Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion, i
 void Vehicle::choose_next_state()
 {
 	switch(state){
-		case STATE_KL	: state_KL(sensor_fusion)	; break;
-		case STATE_PLCL: state_PLCL(sensor_fusion); break;
-		case STATE_PLCR: state_PLCR(sensor_fusion); break;
+		case STATE_KL	: state_KL()	; break;
+		case STATE_PLCL: state_PLCL(); break;
+		case STATE_PLCR: state_PLCR(); break;
 		case STATE_LC	: state_LC()					; break;
 		default			: state = STATE_KL;
 	}
@@ -387,7 +385,7 @@ void Vehicle::state_PLCR(){
 void Vehicle::state_LC(){
 	double lane_centre = lane_width/2.0 + lane_width*lane;
 	//printf("d: %f, centre: %f\n", d, lane_centre);
-	if(abs(d - lane_centre)  < lane_offset){
+	if(fabs(d - lane_centre)  < lane_offset){
 		state = STATE_KL;
 		printf("STATE LC to KL\n");
 		// Set PLCx and KL_count timers to zero since lane changing has occurred
