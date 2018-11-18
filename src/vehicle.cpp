@@ -154,7 +154,8 @@ void Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion, i
 		if((obstacle_s - car_future_s) < cp_inc){
 			// Set flag for front car
 			cur_front_car = true;
-			cur_front_speed = obstacle_speed;
+			// Convert obstacle speed to MPH
+			cur_front_speed = obstacle_speed/MPH_TO_MPS;
 		}
 	}
 	

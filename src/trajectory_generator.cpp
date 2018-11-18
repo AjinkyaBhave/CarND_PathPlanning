@@ -237,7 +237,7 @@ void Trajectory_Generator::generate_trajectory (Vehicle car, vector<double>& nex
 	double target_x = car.cp_inc;
 	double target_y = control_spline(target_x);
 	double target_dist = sqrt(target_x*target_x + target_y*target_y);
-	double N = target_dist/(car.Ts*car.ref_vel*mph_to_mps);
+	double N = target_dist/(car.Ts*car.ref_vel*MPH_TO_MPS);
 	double x_inc = target_x/N;
 	double x_offset = 0;
 	

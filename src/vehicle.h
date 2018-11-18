@@ -17,6 +17,7 @@
 #define RIGHT_LANE	2
 
 #define ROAD_LENGTH 6945.554
+#define MPH_TO_MPS  0.447
 
 using namespace std;
 
