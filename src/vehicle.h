@@ -16,6 +16,8 @@
 
 #define ROAD_LENGTH 6945.554
 
+using namespace std;
+
 // Class to store ego vehicle-related state and parameters
 class Vehicle{
 	
@@ -91,11 +93,11 @@ class Vehicle{
 		Vehicle(int lane, double max_ref_vel);
 		//Destructor
 		virtual ~Vehicle();
-		void get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion, int prev_path_size, double end_path_s);
-		void choose_next_state(std::vector< std::vector<double> > sensor_fusion);
-		void state_KL(std::vector< std::vector<double> > sensor_fusion);
-		void state_PLCL(std::vector< std::vector<double> > sensor_fusion);
-		void state_PLCR(std::vector< std::vector<double> > sensor_fusion);
-		void state_LC();	
+		void get_surrounding_vehicles(vector<vector<double> > sensor_fusion, int prev_path_size, double end_path_s);
+		void choose_next_state();
+		void state_KL();
+		void state_PLCL();
+		void state_PLCR();
+		void state_LC();
 };
 #endif

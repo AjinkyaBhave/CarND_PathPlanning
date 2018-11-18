@@ -47,7 +47,7 @@ Vehicle::Vehicle(int lane, double max_ref_vel){
 
 Vehicle::~Vehicle(){}
 
-void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor_fusion, int prev_path_size, double end_path_s) {
+void Vehicle::get_surrounding_vehicles(vector< vector<double> > sensor_fusion, int prev_path_size, double end_path_s) {
 	// Assume limits for max and min distances in [m] for obstacle cars in all lanes
 	double cur_min_front_s		= ROAD_LENGTH;
 	double cur_max_rear_s		= -1;
@@ -234,7 +234,7 @@ void Vehicle::get_surrounding_vehicles(std::vector< std::vector<double> > sensor
 	
 }
 
-void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion)
+void Vehicle::choose_next_state()
 {
 	switch(state){
 		case STATE_KL	: state_KL(sensor_fusion)	; break;
@@ -243,18 +243,15 @@ void Vehicle::choose_next_state(std::vector< std::vector<double> > sensor_fusion
 		case STATE_LC	: state_LC()					; break;
 		default			: state = STATE_KL;
 	}
-	
-	// Project the obstacle's Frenet position prev_path_size steps into the future
-	//obstacle_s += (double)prev_path_size*Ts*obstacle_speed;
 }
 
-void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
+void Vehicle::state_KL(){
 	if(cur_front_car){
 		// Gap between front vehicle and ego vehicle is too small
 		printf("front car \n");
 		// Reduce current speed
 		if(cur_front_speed < speed){
-			printf("Front Speed: %f, Speed: %f \n", cur_front_speed, speed);
+			//printf("Front Speed: %f, Speed: %f \n", cur_front_speed, speed);
 			ref_vel -= ref_vel_delta;
 		}
 		// Check current lane to decide whether to change left or right
@@ -297,7 +294,7 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 	}
 }
 
-void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
+void Vehicle::state_PLCL(){
 	// Allow to change lanes if situation safe
 	bool change_lane = true;
 	// Car in front in left lane
@@ -342,7 +339,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 	}
 }
 
-void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
+void Vehicle::state_PLCR(){
 	// Allow to change lanes if situation safe
 	bool change_lane = true;
 	// Car in front in right lane
