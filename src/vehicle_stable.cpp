@@ -277,23 +277,22 @@ void Vehicle::state_KL(std::vector< std::vector<double> > sensor_fusion){
 		if(ref_vel < max_ref_vel){
 			ref_vel += ref_vel_delta;
 		}
-		if (lane != CENTRE_LANE){
+		/*if (lane != CENTRE_LANE){
 			KL_count = KL_count + 1;
-			if(KL_count > KL_count_threshold){
-				if(lane != LEFT_LANE){
-					printf("STATE KL to PLCL KL_c\n");
-					state = STATE_PLCL; 
-				}
-				else if (lane != RIGHT_LANE){
-					printf("STATE KL to PLCR KL_c\n");
-					state = STATE_PLCR;
-				}
-			}
 		}
 		else{
 			KL_count = 0;
 		}
-		
+		if(KL_count > KL_count_threshold){
+			if(lane != LEFT_LANE){
+				printf("STATE KL to PLCL\n");
+				state = STATE_PLCL; 
+			}
+			else if (lane != RIGHT_LANE){
+				printf("STATE KL to PLCR\n");
+				state = STATE_PLCR;
+			}
+		}*/
 	}
 }
 
@@ -304,7 +303,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 	if(left_front_car){
 		// Gap between front left vehicle and ego vehicle is too small
 		printf("left front car \n");
-		if(cur_front_car && cur_front_speed < speed){
+		if(cur_front_speed < speed){
 			// Reduce current speed
 			ref_vel -= ref_vel_delta;
 		}
@@ -320,7 +319,7 @@ void Vehicle::state_PLCL(std::vector< std::vector<double> > sensor_fusion){
 	if(left_rear_car){
 		// Gap between rear left vehicle and ego vehicle is too small
 		printf("left rear car \n");
-		if(cur_front_car && cur_front_speed < speed){
+		if(cur_front_speed < speed){
 			// Reduce current speed
 			ref_vel -= ref_vel_delta;
 		}
@@ -349,7 +348,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 	if(right_front_car){
 		// Gap between front right vehicle and ego vehicle is too small
 		printf("right front car \n");
-		if(cur_front_car && cur_front_speed < speed){
+		if(cur_front_speed < speed){
 			// Reduce current speed
 			ref_vel -= ref_vel_delta;
 		}
@@ -365,7 +364,7 @@ void Vehicle::state_PLCR(std::vector< std::vector<double> > sensor_fusion){
 	if(right_rear_car){
 		// Gap between rear right vehicle and ego vehicle is too small
 		printf("right rear car \n");
-		if(cur_front_car && cur_front_speed < speed){
+		if(cur_front_speed < speed){
 			// Reduce current speed
 			ref_vel -= ref_vel_delta;
 		}
@@ -393,9 +392,8 @@ void Vehicle::state_LC(){
 	if(abs(d - lane_centre)  < lane_offset){
 		state = STATE_KL;
 		printf("STATE LC to KL\n");
-		// Set PLCx and KL_count timers to zero since lane changing has occurred
+		// Set both PLCx state counts to zero since lane changing has occured
 		PLCL_count = 0;
 		PLCR_count = 0;
-		KL_count   = 0;
 	}	
 }
